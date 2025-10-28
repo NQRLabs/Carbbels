@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Carbbels - Manual Anagram Solver</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./assets/images/apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="./assets/images/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="./assets/images/android-chrome-512x512.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #0f3460;
+        }
+
+        .logo {
+            max-width: 600px;
+            height: auto;
+            margin: 0 auto 10px;
+            display: block;
+        }
+
+        .subtitle {
+            font-size: 0.9em;
+            color: #a0a0a0;
+            letter-spacing: 1px;
+        }
+
+        .controls {
+            background: rgba(15, 52, 96, 0.3);
+            border: 1px solid #0f3460;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4ecdc4;
+            font-size: 0.9em;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(22, 33, 62, 0.8);
+            border: 1px solid #0f3460;
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #4ecdc4;
+            box-shadow: 0 0 10px rgba(78, 205, 196, 0.3);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: rgba(239, 71, 111, 0.2);
+            border: 1px solid #ef476f;
+            border-radius: 4px;
+            color: #ef476f;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+            flex: 1;
+        }
+
+        .btn:hover {
+            background: rgba(239, 71, 111, 0.3);
+            box-shadow: 0 0 10px rgba(239, 71, 111, 0.3);
+        }
+
+        .btn-style {
+            background: rgba(78, 205, 196, 0.2);
+            border: 1px solid #4ecdc4;
+            color: #4ecdc4;
+        }
+
+        .btn-style:hover {
+            background: rgba(78, 205, 196, 0.3);
+            box-shadow: 0 0 10px rgba(78, 205, 196, 0.3);
+        }
+
+        #playground {
+            background: rgba(22, 33, 62, 0.5);
+            border: 2px solid #0f3460;
+            border-radius: 8px;
+            min-height: 500px;
+            position: relative;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        .letter-tile {
+            position: absolute;
+            cursor: move;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+            transition: transform 0.1s ease;
+        }
+
+        .letter-tile:active {
+            transform: scale(1.05);
+            z-index: 1000 !important;
+        }
+
+        .letter-tile.selected {
+            outline: 3px solid #4ecdc4;
+            outline-offset: 2px;
+        }
+
+        .tile-bg {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .tile-letter {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+            pointer-events: none;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 2px solid #0f3460;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 0 30px rgba(78, 205, 196, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #0f3460;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            color: #4ecdc4;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #a0a0a0;
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #d0d0d0;
+            transform: rotate(90deg);
+        }
+
+        .modal-section {
+            margin-bottom: 20px;
+        }
+
+        .modal-section:last-child {
+            margin-bottom: 0;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(22, 33, 62, 0.8);
+            border: 1px solid #0f3460;
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234ecdc4' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 40px;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #4ecdc4;
+            box-shadow: 0 0 10px rgba(78, 205, 196, 0.3);
+        }
+
+        select option {
+            background: #16213e;
+            color: #e0e0e0;
+            padding: 8px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: rgba(15, 52, 96, 0.5);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #4ecdc4;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(78, 205, 196, 0.5);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: #4ecdc4;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(78, 205, 196, 0.5);
+            border: none;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-upload-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(78, 205, 196, 0.2);
+            border: 1px solid #4ecdc4;
+            border-radius: 4px;
+            color: #4ecdc4;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .file-upload-btn:hover {
+            background: rgba(78, 205, 196, 0.3);
+            box-shadow: 0 0 10px rgba(78, 205, 196, 0.3);
+        }
+
+        .range-value {
+            display: inline-block;
+            margin-left: 10px;
+            color: #4ecdc4;
+            font-weight: 500;
+            min-width: 50px;
+        }
+
+        .info-text {
+            color: #a0a0a0;
+            font-size: 0.85em;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .hex-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .hex-input-group input[type="text"] {
+            flex: 1;
+            font-size: 1em;
+            padding: 10px;
+        }
+
+        /* Preview Tile */
+        .preview-tile-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            background: rgba(22, 33, 62, 0.3);
+            border: 1px solid #0f3460;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .preview-tile {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* 3D Style Options */
+        .style-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .style-option {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: rgba(22, 33, 62, 0.5);
+            border: 1px solid #0f3460;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .style-option:hover {
+            background: rgba(22, 33, 62, 0.8);
+            border-color: #4ecdc4;
+        }
+
+        .style-option input[type="radio"] {
+            cursor: pointer;
+        }
+
+        /* Selection rectangle */
+        #selectionRect {
+            position: absolute;
+            border: 2px dashed #4ecdc4;
+            background: rgba(78, 205, 196, 0.1);
+            pointer-events: none;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                max-width: 200px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .style-options {
+                flex-direction: column;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="./assets/images/logo.png" alt="Carbbels" class="logo">
+            <div class="subtitle">A lightweight manual anagramming sandbox by NQR</div>
+        </header>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="letterInput">Enter Letters</label>
+                <input type="text" id="letterInput" placeholder="Type letters to create tiles..." autocomplete="off">
+
+                <a href="#" id="keyboardShortcutLink" class="info-text" style="color: #a0a0a0; text-decoration: none; transition: color 0.3s ease;" onmouseover="this.style.color='#4ecdc4'" onmouseout="this.style.color='#a0a0a0'">Controls & Shortcuts</a>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-style" id="styleBtn">Style</button>
+                <button class="btn" id="clearBtn">Clear Playground</button>
+                <button class="btn" id="resetBtn">Reset All</button>
+            </div>
+        </div>
+
+        <div id="playground">
+            <div id="selectionRect"></div>
+        </div>
+
+        <footer style="text-align: center; margin-top: 20px; padding: 20px; color: #a0a0a0; font-size: 0.85em; border-top: 1px solid #0f3460;">
+            <a href="#" id="licenseLink" style="color: #a0a0a0; text-decoration: none; transition: color 0.3s ease;" onmouseover="this.style.color='#4ecdc4'" onmouseout="this.style.color='#a0a0a0'">Â© 2025 NQR â€¢ Licensed under MIT â€¢ Click for details</a>
+        </footer>
+    </div>
+
+    <!-- Style Modal -->
+    <div id="styleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Tile Style Settings</h2>
+                <button class="close-btn" id="closeModal">&times;</button>
+            </div>
+
+            <div class="preview-tile-container">
+                <div class="preview-tile" id="previewTile"></div>
+            </div>
+
+            <div class="modal-section">
+                <label for="fontFamily">Font Family</label>
+                <select id="fontFamily">
+                    <option value="">System Default</option>
+                    <option value="Arial, sans-serif">Arial</option>
+                    <option value="'Arial Black', sans-serif">Arial Black</option>
+                    <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+                    <option value="'Courier New', monospace">Courier New</option>
+                    <option value="Georgia, serif">Georgia</option>
+                    <option value="Impact, sans-serif">Impact</option>
+                    <option value="'Lucida Console', monospace">Lucida Console</option>
+                    <option value="'Lucida Sans Unicode', sans-serif">Lucida Sans Unicode</option>
+                    <option value="'Palatino Linotype', serif">Palatino Linotype</option>
+                    <option value="Tahoma, sans-serif">Tahoma</option>
+                    <option value="'Times New Roman', serif">Times New Roman</option>
+                    <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                    <option value="Verdana, sans-serif">Verdana</option>
+                    <option value="'Brush Script MT', cursive">Brush Script MT</option>
+                    <option value="Garamond, serif">Garamond</option>
+                    <option value="'Book Antiqua', serif">Book Antiqua</option>
+                </select>
+            </div>
+
+            <div class="modal-section">
+                <label for="fontUpload">Custom Font Upload</label>
+                <label for="fontUpload" class="file-upload-btn">Upload Font File (.ttf, .otf, .woff)</label>
+                <input type="file" id="fontUpload" accept=".ttf,.otf,.woff,.woff2">
+                <div class="info-text" id="fontName">No custom font loaded</div>
+            </div>
+
+            <div class="modal-section">
+                <label for="fontSize">Font Size: <span class="range-value" id="fontSizeValue">32</span>px</label>
+                <input type="range" id="fontSize" min="16" max="72" value="32">
+            </div>
+
+            <div class="modal-section">
+                <label for="tileSize">Tile Size: <span class="range-value" id="tileSizeValue">80</span>px</label>
+                <input type="range" id="tileSize" min="40" max="150" value="80">
+            </div>
+
+            <div class="modal-section">
+                <label for="fontColor">Font Color</label>
+                <select id="fontColor">
+                    <option value="#1a1a2e" selected>Black</option>
+                    <option value="#FFFFFF">White</option>
+                    <option value="#FF0000">Red</option>
+                    <option value="#0000FF">Blue</option>
+                    <option value="#00AA00">Green</option>
+                    <option value="#FF6B00">Orange</option>
+                    <option value="#FFD700">Gold</option>
+                    <option value="#800080">Purple</option>
+                    <option value="custom">Custom Hex</option>
+                </select>
+                <div class="hex-input-group" style="margin-top: 10px;">
+                    <label for="customFontColorHex" style="margin: 0; min-width: 150px;">Custom Font Color:</label>
+                    <input type="text" id="customFontColorHex" placeholder="#000000" maxlength="7">
+                </div>
+            </div>
+
+            <div class="modal-section">
+                <label for="tileColor">Tile Color</label>
+                <select id="tileColor">
+                    <option value="#e8dcc4" selected>Beige (Default)</option>
+                    <option value="#FFE4C4">Bisque</option>
+                    <option value="#F5DEB3">Wheat</option>
+                    <option value="#DEB887">Burlywood</option>
+                    <option value="#D2B48C">Tan</option>
+                    <option value="#BC8F8F">Rosy Brown</option>
+                    <option value="#F0E68C">Khaki</option>
+                    <option value="#E0E0E0">Light Gray</option>
+                    <option value="#ADD8E6">Light Blue</option>
+                    <option value="#FFB6C1">Light Pink</option>
+                    <option value="#90EE90">Light Green</option>
+                    <option value="custom">Custom Hex</option>
+                </select>
+                <div class="hex-input-group" style="margin-top: 10px;">
+                    <label for="customTileColorHex" style="margin: 0; min-width: 150px;">Custom Tile Color:</label>
+                    <input type="text" id="customTileColorHex" placeholder="#e8dcc4" maxlength="7">
+                </div>
+            </div>
+
+            <div class="modal-section">
+                <label>Tile Style</label>
+                <div class="style-options">
+                    <label class="style-option">
+                        <input type="radio" name="tileStyle" value="3d" checked>
+                        <span>3D Tiles</span>
+                    </label>
+                    <label class="style-option">
+                        <input type="radio" name="tileStyle" value="flat">
+                        <span>Flat Tiles</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Modal -->
+    <div id="keyboardShortcutModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Keyboard Shortcuts</h2>
+          <button class="close-btn" id="closeKeyboardShortcutModal">&times;</button>
+        </div>
+        <div style="line-height:1.6;color:#e0e0e0;">
+    
+          <p><strong>Click</strong> - Select a tile</p>
+          <p><strong>Ctrl + Click</strong> - Add or remove tile from selection</p>
+          <p><strong>Click + Drag</strong> - Move tile (or selected group)</p>
+          <p><strong>Click + Drag on Empty Space</strong> - Box-select multiple tiles</p>
+    
+          <hr style="border-color:#444;">
+    
+          <p><strong>Delete / Backspace</strong> - Delete selected tiles</p>
+          <p><strong>Ctrl + A</strong> - Select all tiles</p>
+          <p><strong>Ctrl + Shift + C</strong> - Copy tile letters in visual (left-right, top-bottom) order</p>
+    
+          <hr style="border-color:#444;">
+    
+          <p><strong>Ctrl + Z</strong> - Undo last action</p>
+          <p><strong>Ctrl + Y</strong> - Redo undone action</p>
+    
+          <hr style="border-color:#444;">
+    
+          <p><strong>G</strong> - Group in a horizontal row</p>
+          <p><strong>H</strong> - Evenly distribute horizontally</p>
+          <p><strong>V</strong> - Evenly distribute vertically</p>
+    
+          <p><strong>Arrow Left / Right</strong> - Align selected tiles vertically (same X)</p>
+          <p><strong>Arrow Up / Down</strong> - Align selected tiles horizontally (same Y)</p>
+    
+          <hr style="border-color:#444;">
+    
+          <p><strong>Typing</strong> - Adds letters to sandbox & textbox</p>
+          <p><strong>Backspace in textbox</strong> - Removes the correct tile</p>
+          <p><strong>Pasting text</strong> - Adds multiple tiles at once (distributed automatically)</p>
+    
+        </div>
+      </div>
+    </div>
+    <!-- MIT License Modal -->
+    <div id="licenseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">MIT License</h2>
+                <button class="close-btn" id="closeLicenseModal">&times;</button>
+            </div>
+            <div style="line-height: 1.6; color: #e0e0e0;">
+                <p style="margin-bottom: 15px;">Copyright (c) 2025 NQR</p>
+                <p style="margin-bottom: 15px;">
+                    Permission is hereby granted, free of charge, to any person obtaining a copy
+                    of this software and associated documentation files (the "Software"), to deal
+                    in the Software without restriction, including without limitation the rights
+                    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+                    copies of the Software, and to permit persons to whom the Software is
+                    furnished to do so, subject to the following conditions:
+                </p>
+                <p style="margin-bottom: 15px;">
+                    The above copyright notice and this permission notice shall be included in all
+                    copies or substantial portions of the Software.
+                </p>
+                <p style="margin-bottom: 0;">
+                    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+                    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+                    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+                    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+                    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+                    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+                    SOFTWARE.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        // Authoritative letter state
+        let lettersState = [];
+
+
+        function snapshotCurrentState() {
+            return {
+                text: letterInput.value,
+                tiles: state.tiles.map(t => ({
+                    letter: t.letter,
+                    x: t.x,
+                    y: t.y
+                })),
+                font: state.currentFont,
+                fontSize: state.fontSize,
+                tileStyle: state.tileStyle,
+                tileColor: state.tileColor
+            };
+        }
+
+        function saveState() {
+            undoStack.push(snapshotCurrentState());
+            redoStack.length = 0; // clear redo history on new action
+        }
+
+        function restoreState(snapshot) {
+            // Prevent input handler from firing during restore
+            letterInput.removeEventListener('input', letterInputHandler);
+            
+            // Restore text FIRST
+            letterInput.value = snapshot.text;
+            letterInput.dataset.previousValue = snapshot.text;
+        
+            // Clear existing tiles
+            state.tiles.forEach(t => t.element.remove());
+            state.tiles = [];
+            state.selectedTiles.clear();
+        
+            // Restore style settings
+            state.currentFont = snapshot.font;
+            state.fontSize = snapshot.fontSize;
+            state.tileStyle = snapshot.tileStyle;
+            state.tileColor = snapshot.tileColor;
+        
+            // Ensure images are set
+            state.tileImage3D = generateTileImage(true);
+            state.tileImageFlat = generateTileImage(false);
+        
+            // Recreate tiles using saved order exactly
+            snapshot.tiles.forEach((t, i) => {
+                createTile(t.letter, t.x ?? findEmptySpace().x, t.y ?? findEmptySpace().y, i);
+            });
+            letterInput.addEventListener('input', letterInputHandler);
+            resyncTileIndexesFromText();
+        }
+
+        function resyncTileIndexesFromText() {
+            const text = letterInput.value.toUpperCase();
+        
+            // Build a new sorted array based on text order
+            let newArray = [];
+            let used = new Set();
+        
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+        
+                // Find the next tile whose letter matches and isn't used yet
+                const match = state.tiles.find(t => t.letter === char && !used.has(t));
+                if (match) {
+                    match.index = i;
+                    used.add(match);
+                    newArray.push(match);
+                }
+            }
+        
+            // Replace tile ordering with authoritative ordering
+            state.tiles = newArray;
+        }
+        
+        // Utility to convert state to string
+        function lettersToString() {
+          return lettersState.map(l => l.char).join('');
+        }
+        
+        // Renders tiles based on state
+        function renderTiles() {
+          const container = document.getElementById('tile-container');
+          container.innerHTML = '';
+          lettersState.forEach((l, i) => {
+            const tile = document.createElement('div');
+            tile.className = 'tile';
+            tile.textContent = l.char;
+            tile.dataset.id = l.id;
+            tile.dataset.index = i;
+            tile.draggable = true;
+            container.appendChild(tile);
+          });
+        }
+
+        // === COLOR HELPERS (place near top of script) ===
+        function parseColorToRGB(color) {
+          const ctx = document.createElement('canvas').getContext('2d');
+          ctx.fillStyle = color;
+          const computed = ctx.fillStyle;
+          ctx.fillRect(0,0,1,1);
+          try {
+            const div = document.createElement('div');
+            div.style.color = computed;
+            document.body.appendChild(div);
+            const rgb = getComputedStyle(div).color;
+            document.body.removeChild(div);
+            const nums = rgb.match(/\d+/g).map(Number);
+            return { r: nums[0], g: nums[1], b: nums[2] };
+          } catch {
+            return { r: 0, g: 0, b: 0 };
+          }
+        }
+        
+        function rgbToHsl({r,g,b}) {
+          r/=255; g/=255; b/=255;
+          const max = Math.max(r,g,b), min = Math.min(r,g,b);
+          let h, s, l = (max+min)/2;
+          const d = max-min;
+          if (d === 0) { h = 0; s = 0; }
+          else {
+            s = l > 0.5 ? d/(2-max-min) : d/(max+min);
+            switch(max){
+              case r: h = (g-b)/d + (g < b ? 6 : 0); break;
+              case g: h = (b-r)/d + 2; break;
+              case b: h = (r-g)/d + 4; break;
+            }
+            h /= 6;
+          }
+          return { h, s, l };
+        }
+        
+        function hslToCss({h,s,l}) {
+          return `hsl(${Math.round(h*360)}, ${Math.round(s*100)}%, ${Math.round(l*100)}%)`;
+        }
+        
+        function adjustLightness(color, delta) {
+          const rgb = parseColorToRGB(color);
+          const hsl = rgbToHsl(rgb);
+          hsl.l = Math.max(0, Math.min(1, hsl.l + delta));
+          return hslToCss(hsl);
+        }
+
+        // Unified letter placement styling
+        function applyLetterPosition(letterSpan) {
+          const top = state.tileStyle === '3d' ? '42.5%' : '50%';
+          letterSpan.style.top = top;
+          letterSpan.style.transform = 'translate(-50%, -50%)';
+          letterSpan.style.textShadow = 'none';
+        }
+
+        // Select all tiles in the playground
+        function selectAllTiles() {
+          state.selectedTiles.clear();
+          state.tiles.forEach(t => {
+            state.selectedTiles.add(t);
+            t.element.classList.add('selected');
+          });
+        }
+        
+        // Delete all currently selected tiles
+        function deleteSelectedTiles() {
+            if (state.selectedTiles.size === 0) return;
+            saveState();
+        
+            // Convert set to array so we can sort by index before deleting
+            const tilesToDelete = [...state.selectedTiles].sort((a, b) => b.index - a.index);
+        
+            tilesToDelete.forEach(tile => {
+                const index = tile.index;
+                tile.element.remove();
+                state.tiles.splice(index, 1);
+        
+                // Remove from textbox string by index
+                const text = letterInput.value.toUpperCase();
+                const newText = text.slice(0, index) + text.slice(index + 1);
+                letterInput.value = newText;
+                letterInput.dataset.previousValue = newText;
+            });
+        
+            // Reindex remaining tiles
+            state.tiles.forEach((tile, i) => {
+                tile.index = i;
+            });
+        
+            state.selectedTiles.clear();
+            resyncTileIndexesFromText();
+        }
+
+        // Generate tile background image
+        function generateTileImage(is3D = true) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 100;
+            canvas.height = 100;
+            const ctx = canvas.getContext('2d');
+
+            if (is3D) {
+              // === 3D TILE: viewer looking UP at the tile ===
+              const w = 100, h = 100;
+              const radius = 10;
+              
+              // Where the bottom bevel reads (a thin shadow band near the bottom)
+              const bevelY = h * 0.82; // 82% down the face
+              
+              // Colors (no top shine)
+              const faceBase     = state.tileColor;                         // main face
+              const faceDarkLow  = adjustLightness(state.tileColor, -0.10); // darker toward bottom
+              const bevelShadow  = adjustLightness(state.tileColor, -0.18); // thin shadow band
+              const border       = adjustLightness(state.tileColor, -0.25); // outline
+              
+              // 1) Drop shadow below tile (object on surface, not floating)
+              ctx.save();
+              ctx.shadowColor = 'rgba(0,0,0,0.25)';
+              ctx.shadowBlur = 10;
+              ctx.shadowOffsetY = 6;
+              ctx.fillStyle = 'rgba(0,0,0,0)';
+              ctx.roundRect(0, 0, w, h, radius);
+              ctx.fill();
+              ctx.restore();
+              
+              // 2) Single unified silhouette, flat base color (no top highlight)
+              ctx.beginPath();
+              ctx.roundRect(0, 0, w, h, radius);
+              ctx.fillStyle = faceBase;
+              ctx.fill();
+              
+              // 3) Subtle vertical darkening toward the BOTTOM (viewer is looking up)
+              ctx.save();
+              ctx.beginPath();
+              ctx.roundRect(0, 0, w, h, radius);
+              ctx.clip();
+              const wallGrad = ctx.createLinearGradient(0, 0, 0, h);
+              wallGrad.addColorStop(0.00, faceBase);     // unchanged at top
+              wallGrad.addColorStop(1.00, faceDarkLow);  // darker at bottom
+              ctx.fillStyle = wallGrad;
+              ctx.fillRect(0, 0, w, h);
+              ctx.restore();
+              
+              // 4) Thin BEVEL SHADOW LINE near the bottom edge (the “lip” you want)
+              ctx.fillStyle = bevelShadow;
+              ctx.fillRect(0, bevelY, w, 2); // 2px band; tweak thickness if needed
+              
+              // 5) Single outline last
+              ctx.lineWidth = 2;
+              ctx.strokeStyle = border;
+              ctx.stroke();
+            } else {
+                // Flat tile: solid color, no gradient, no highlight/shading
+                ctx.fillStyle = state.tileColor;
+            
+                const radius = 8;
+                ctx.beginPath();
+                ctx.moveTo(radius, 0);
+                ctx.lineTo(100 - radius, 0);
+                ctx.quadraticCurveTo(100, 0, 100, radius);
+                ctx.lineTo(100, 100 - radius);
+                ctx.quadraticCurveTo(100, 100, 100 - radius, 100);
+                ctx.lineTo(radius, 100);
+                ctx.quadraticCurveTo(0, 100, 0, 100 - radius);
+                ctx.lineTo(0, radius);
+                ctx.quadraticCurveTo(0, 0, radius, 0);
+                ctx.closePath();
+                ctx.fill();
+            
+                // Simple border only
+                ctx.strokeStyle = state.tileColorBorder;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+
+            return canvas.toDataURL();
+        }
+
+        // Helper function to calculate tile color variations
+        function calculateTileColors(baseColor) {
+            // Convert hex to RGB
+            const hex = baseColor.replace('#', '');
+            const r = parseInt(hex.substr(0, 2), 16);
+            const g = parseInt(hex.substr(2, 2), 16);
+            const b = parseInt(hex.substr(4, 2), 16);
+
+            // Calculate lighter version (for gradient start)
+            const lightR = Math.min(255, r + 30);
+            const lightG = Math.min(255, g + 30);
+            const lightB = Math.min(255, b + 30);
+
+            // Calculate darker version (for gradient end)
+            const darkR = Math.max(0, r - 30);
+            const darkG = Math.max(0, g - 30);
+            const darkB = Math.max(0, b - 30);
+
+            // Calculate border color (darker)
+            const borderR = Math.max(0, r - 50);
+            const borderG = Math.max(0, g - 50);
+            const borderB = Math.max(0, b - 50);
+
+            return {
+                light: `#${lightR.toString(16).padStart(2, '0')}${lightG.toString(16).padStart(2, '0')}${lightB.toString(16).padStart(2, '0')}`,
+                base: baseColor,
+                dark: `#${darkR.toString(16).padStart(2, '0')}${darkG.toString(16).padStart(2, '0')}${darkB.toString(16).padStart(2, '0')}`,
+                border: `#${borderR.toString(16).padStart(2, '0')}${borderG.toString(16).padStart(2, '0')}${borderB.toString(16).padStart(2, '0')}`
+            };
+        }
+
+        // Initialize tile colors
+        const defaultTileColor = '#e8dcc4';
+        const tileColors = calculateTileColors(defaultTileColor);
+
+        // State
+        const state = {
+            tiles: [],
+            selectedTiles: new Set(),
+            currentFont: null,
+            fontSize: 32,
+            tileSize: 80,
+            fontColor: '#1a1a2e',
+            tileColor: tileColors.base,
+            tileColorLight: tileColors.light,
+            tileColorDark: tileColors.dark,
+            tileColorBorder: tileColors.border,
+            tileStyle: '3d',
+            tileImage3D: null,
+            tileImageFlat: null,
+            draggedTile: null,
+            offsetX: 0,
+            offsetY: 0,
+            isSelecting: false,
+            selectionStart: { x: 0, y: 0 },
+            isDraggingMultiple: false,
+            multiDragStart: { x: 0, y: 0 },
+            wasDragging: false
+        };
+
+        const undoStack = [];
+        const redoStack = [];
+
+        // Generate initial tile images
+        state.tileImage3D = generateTileImage(true);
+        state.tileImageFlat = generateTileImage(false);
+
+        // DOM elements
+        const letterInput = document.getElementById('letterInput');
+        const playground = document.getElementById('playground');
+        const styleBtn = document.getElementById('styleBtn');
+        const styleModal = document.getElementById('styleModal');
+        const closeModal = document.getElementById('closeModal');
+        const licenseModal = document.getElementById('licenseModal');
+        const licenseLink = document.getElementById('licenseLink');
+        const closeLicenseModal = document.getElementById('closeLicenseModal');
+        const keyboardShortcutLink = document.getElementById('keyboardShortcutLink');
+        const keyboardShortcutModal = document.getElementById('keyboardShortcutModal');
+        const closeKeyboardShortcutModal = document.getElementById('closeKeyboardShortcutModal');
+        const previewTile = document.getElementById('previewTile');
+        const fontFamily = document.getElementById('fontFamily');
+        const fontUpload = document.getElementById('fontUpload');
+        const fontName = document.getElementById('fontName');
+        const fontSize = document.getElementById('fontSize');
+        const fontSizeValue = document.getElementById('fontSizeValue');
+        const tileSize = document.getElementById('tileSize');
+        const tileSizeValue = document.getElementById('tileSizeValue');
+        const fontColor = document.getElementById('fontColor');
+        const customFontColorHex = document.getElementById('customFontColorHex');
+        const tileColor = document.getElementById('tileColor');
+        const customTileColorHex = document.getElementById('customTileColorHex');
+        const clearBtn = document.getElementById('clearBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const selectionRect = document.getElementById('selectionRect');
+
+        // Initialize preview tile
+        function updatePreviewTile() {
+            const tileImg = state.tileStyle === '3d' ? state.tileImage3D : state.tileImageFlat;
+            
+            previewTile.style.width = state.tileSize + 'px';
+            previewTile.style.height = state.tileSize + 'px';
+            previewTile.style.textShadow = 'none';
+
+
+            const imgFilter = state.tileStyle === '3d'
+              ? 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
+              : 'none';
+            
+            const letterTop = state.tileStyle === '3d' ? '42.5%' : '50%';
+            const letterShadow = 'none';
+            
+            previewTile.innerHTML = `
+              <img class="tile-bg" src="${tileImg}" style="width:100%;height:100%;position:absolute;top:0;left:0;filter:${imgFilter};">
+              <span class="tile-letter" style="position:absolute;top:${letterTop};left:50%;transform:translate(-50%,-50%); font-size:${state.fontSize}px;font-weight:bold;color:${state.fontColor}; ${state.currentFont ? 'font-family:'+state.currentFont+';' : ''} text-shadow:${letterShadow};pointer-events:none;">A</span>
+            `;
+        }
+
+        // Create a new tile
+        function createTile(letter, x, y, index) {
+            const tile = document.createElement('div');
+            tile.className = 'letter-tile';
+            tile.style.width = state.tileSize + 'px';
+            tile.style.height = state.tileSize + 'px';
+            tile.style.left = x + 'px';
+            tile.style.top = y + 'px';
+            tile.style.zIndex = state.tiles.length;
+
+            const tileImg = state.tileStyle === '3d' ? state.tileImage3D : state.tileImageFlat;
+            const bg = document.createElement('img');
+            bg.className = 'tile-bg';
+            bg.src = tileImg;
+            bg.style.filter = state.tileStyle === '3d'
+              ? 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
+              : 'none';
+
+            const letterSpan = document.createElement('span');
+            letterSpan.className = 'tile-letter';
+            letterSpan.textContent = letter;
+            letterSpan.style.fontSize = state.fontSize + 'px';
+            letterSpan.style.color = state.fontColor;
+            applyLetterPosition(letterSpan);
+
+            if (state.currentFont) {
+                letterSpan.style.fontFamily = state.currentFont;
+            }
+
+            tile.appendChild(bg);
+            tile.appendChild(letterSpan);
+            playground.appendChild(tile);
+
+            const tileData = { element: tile, letter, x, y, index };
+            state.tiles.push(tileData);
+
+            // Add event listeners
+            tile.addEventListener('mousedown', startDrag);
+            tile.addEventListener('touchstart', startDrag, { passive: false });
+
+            return tile;
+        }
+
+        // Find empty space for new tile
+        function findEmptySpace() {
+            const tileSize = state.tileSize;
+            const padding = 10;
+            const playgroundRect = playground.getBoundingClientRect();
+            const cols = Math.floor((playgroundRect.width - padding) / (tileSize + padding));
+            const rows = Math.floor((playgroundRect.height - padding) / (tileSize + padding));
+
+            // Create grid to track occupied spaces
+            const grid = Array(rows).fill(null).map(() => Array(cols).fill(false));
+
+            // Mark occupied spaces
+            state.tiles.forEach(tile => {
+                const col = Math.floor(tile.x / (tileSize + padding));
+                const row = Math.floor(tile.y / (tileSize + padding));
+                if (row >= 0 && row < rows && col >= 0 && col < cols) {
+                    grid[row][col] = true;
+                }
+            });
+
+            // Find first empty space
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    if (!grid[row][col]) {
+                        return {
+                            x: col * (tileSize + padding) + padding,
+                            y: row * (tileSize + padding) + padding
+                        };
+                    }
+                }
+            }
+
+            // If no empty space, place at a calculated position
+            return {
+                x: (state.tiles.length % cols) * (tileSize + padding) + padding,
+                y: Math.floor(state.tiles.length / cols) * (tileSize + padding) + padding
+            };
+        }
+
+        // Copy visual order to clipboard
+        function copyVisualOrderToClipboard() {
+            if (state.tiles.length === 0) return;
+        
+            // Sorting tiles by y then x for natural reading order
+            const rowTolerance = 25; // pixels allowed to still count as same row
+            const ordered = [...state.tiles].sort((a, b) => {
+                const rowDiff = Math.abs(a.y - b.y);
+                if (rowDiff < rowTolerance) {
+                    // Same visual row ? sort by x
+                    return a.x - b.x;
+                }
+                // Different row ? sort by y (higher tiles first)
+                return a.y - b.y;
+            });
+
+        
+            const text = ordered.map(tile => tile.letter).join('');
+        
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    console.log("Copied visual order:", text);
+                })
+                .catch(err => {
+                    console.warn("Clipboard write failed:", err);
+                });
+        }
+
+        // Handle input changes
+        function letterInputHandler(e) {
+            saveState();
+            const newText = e.target.value.toUpperCase();
+            const oldText = letterInput.dataset.previousValue || '';
+        
+            if (newText === oldText) return;
+        
+            // Find first differing index
+            let diffIndex = 0;
+            while (
+                diffIndex < newText.length &&
+                diffIndex < oldText.length &&
+                newText[diffIndex] === oldText[diffIndex]
+            ) {
+                diffIndex++;
+            }
+        
+            if (newText.length < oldText.length) {
+                // Multiple deletion support
+                const removedCount = oldText.length - newText.length;
+                for (let i = 0; i < removedCount; i++) {
+                    const tile = state.tiles[diffIndex];
+                    if (tile) {
+                        tile.element.remove();
+                        state.tiles.splice(diffIndex, 1);
+                    }
+                }
+            } else {
+                // Multiple insertion support
+
+                const addedCount = newText.length - oldText.length;
+                for (let i = 0; i < addedCount; i++) {
+                    const newChar = newText[diffIndex + i];
+                    const pos = findEmptySpace(); // ? recompute each time
+                    createTile(newChar, pos.x, pos.y, diffIndex + i);
+                }
+            }
+        
+            // Reindex tiles
+            state.tiles.forEach((tile, i) => tile.index = i);
+        
+            letterInput.dataset.previousValue = newText;
+            resyncTileIndexesFromText();
+        }
+        letterInput.addEventListener('input', letterInputHandler);
+
+        document.addEventListener('keydown', (e) => {
+          // Do not trigger shortcuts while typing in the letters input or inside any modal
+          const isTyping = e.target === letterInput;
+          const modalOpen =
+            styleModal.classList.contains('active') ||
+            licenseModal.classList.contains('active') ||
+            (typeof keyboardShortcutModal !== 'undefined' && keyboardShortcutModal.classList.contains('active'));
+        
+          if (isTyping || modalOpen) {
+            // Allow normal typing/keys inside input or when a modal is open
+            if (e.key === 'Escape' && typeof keyboardShortcutModal !== 'undefined') {
+              keyboardShortcutModal.classList.remove('active');
+            }
+            return;
+          }
+        
+          // ===== Selection-wide layout shortcuts (need 2+ tiles selected) =====
+          if (!state.isDragging && state.selectedTiles.size > 1) {
+            // Group: pack tightly into a row (L?R then T?B order)
+            if (e.key === 'g') {
+              e.preventDefault();
+              layoutSelectedTiles('group');
+              return;
+            }
+        
+            // Align vertically (same X) with Left/Right
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+              e.preventDefault();
+              layoutSelectedTiles('align-vertical');
+              return;
+            }
+        
+            // Align horizontally (same Y) with Up/Down
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+              e.preventDefault();
+              layoutSelectedTiles('align-horizontal');
+              return;
+            }
+        
+            // Distribute horizontally (keep leftmost & rightmost fixed)
+            if (e.key === 'h') {
+              e.preventDefault();
+              layoutSelectedTiles('distribute-h');
+              return;
+            }
+        
+            // Distribute vertically (keep topmost & bottommost fixed)
+            if (e.key === 'v') {
+              e.preventDefault();
+              layoutSelectedTiles('distribute-v');
+              return;
+            }
+          }
+
+        
+          // ===== Global shortcuts =====
+        
+          // Ctrl+A / Cmd+A ? Select all tiles
+          if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
+            e.preventDefault(); // prevent page text selection
+            selectAllTiles();
+            return;
+          }
+        
+          // Delete or Backspace ? Delete selected tiles
+          if (e.key === 'Delete' || e.key === 'Backspace') {
+            e.preventDefault();
+            deleteSelectedTiles();  // saveState() is already called inside this function
+            return;
+          }
+        
+          // Escape closes the Keyboard Shortcuts modal if open
+          if (e.key === 'Escape' && typeof keyboardShortcutModal !== 'undefined') {
+            keyboardShortcutModal.classList.remove('active');
+          }
+
+          // Ctrl+Shift+C: Copy visual tile order (ARG helper)
+          if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'c') {
+              e.preventDefault();
+              copyVisualOrderToClipboard();
+              return;
+          }
+
+          // Undo: Ctrl+Z
+          if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+              e.preventDefault();
+              if (undoStack.length > 0) {
+                  const current = {
+                      text: letterInput.value,
+                      tiles: state.tiles.map(t => ({
+                          letter: t.letter,
+                          x: t.x,
+                          y: t.y
+                      })),
+                      font: state.currentFont,
+                      fontSize: state.fontSize,
+                      tileStyle: state.tileStyle,
+                      tileColor: state.tileColor
+                  };
+                  redoStack.push(current);
+          
+                  const snapshot = undoStack.pop();
+                  restoreState(snapshot);
+              }
+              return;
+          }
+          
+          // Redo: Ctrl+Y
+          if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+              e.preventDefault();
+              if (redoStack.length > 0) {
+                  const snapshot = redoStack.pop();
+                  const current = snapshotCurrentState();
+                  undoStack.push(current);         // push current to undo
+                  restoreState(snapshot);          // restore redo snapshot
+              }
+              return;
+          }
+        });
+
+        // Drag functionality
+        function startDrag(e) {
+          // One snapshot per drag start
+          saveState();
+          state.wasDragging = false;
+          e.preventDefault();
+        
+          const tileEl = e.currentTarget || e.target.closest('.letter-tile');
+          const tileData = state.tiles.find(t => t.element === tileEl);
+          if (!tileData) return;
+        
+          state.isDragging = true;
+          state.draggingTile = tileData;
+        
+          const playgroundRect = playground.getBoundingClientRect();
+          const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+          const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+        
+          state.dragOffset = {
+            x: clientX - tileData.x,
+            y: clientY - tileData.y
+          };
+          state.dragOffsetRect = {
+            left: clientX - playgroundRect.left,
+            top:  clientY - playgroundRect.top
+          };
+        
+          // Selection rules on drag start:
+          // If dragging a non-selected tile, select only it
+          // If dragging a selected tile, keep the whole selection
+          if (!state.selectedTiles.has(tileData)) {
+              state.selectedTiles.forEach(t => t.element.classList.remove('selected'));
+              state.selectedTiles.clear();
+              state.selectedTiles.add(tileData);
+              tileEl.classList.add('selected');
+          } else {
+              state.selectedTiles.forEach(t => t.element.classList.add('selected'));
+          }
+        
+          // For multi-drag, capture the selection's original positions once
+          state.multiDragStart = { x: clientX, y: clientY };
+          if (state.selectedTiles.size > 1 && state.selectedTiles.has(tileData)) {
+            state.isDraggingMultiple = true;
+            state.originalPositions = new Map();
+            state.selectedTiles.forEach(t => {
+              state.originalPositions.set(t, { x: t.x, y: t.y });
+            });
+          } else {
+            state.isDraggingMultiple = false;
+            state.originalPositions = null;
+          }
+        
+          document.addEventListener('mousemove', drag);
+          document.addEventListener('mouseup', endDrag);
+          document.addEventListener('touchmove', drag, { passive: false });
+          document.addEventListener('touchend', endDrag);
+        }
+        
+        function drag(e) {
+          if (!state.isDragging) return;
+        
+          e.preventDefault();
+          const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+          const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+          const playgroundRect = playground.getBoundingClientRect();
+        
+          if (state.isDraggingMultiple) {
+            const deltaX = clientX - state.multiDragStart.x;
+            const deltaY = clientY - state.multiDragStart.y;
+        
+            state.selectedTiles.forEach(t => {
+              const orig = state.originalPositions.get(t);
+              let newX = orig.x + deltaX;
+              let newY = orig.y + deltaY;
+        
+              // constrain within playground
+              newX = Math.max(0, Math.min(newX, playgroundRect.width - state.tileSize));
+              newY = Math.max(0, Math.min(newY, playgroundRect.height - state.tileSize));
+        
+              t.element.style.left = newX + 'px';
+              t.element.style.top  = newY + 'px';
+            });
+        
+          } else {
+            // single tile
+            const t = state.draggingTile;
+            if (!t) return;
+        
+            let newX = clientX - state.dragOffset.x;
+            let newY = clientY - state.dragOffset.y;
+        
+            newX = Math.max(0, Math.min(newX, playgroundRect.width - state.tileSize));
+            newY = Math.max(0, Math.min(newY, playgroundRect.height - state.tileSize));
+        
+            t.element.style.left = newX + 'px';
+            t.element.style.top  = newY + 'px';
+          }
+        }
+
+        function endDrag() {
+            if (!state.isDragging) return;
+            state.wasDragging = true;
+        
+            const playgroundRect = playground.getBoundingClientRect();
+        
+            if (state.isDraggingMultiple) {
+                // Commit positions for all selected tiles
+                state.selectedTiles.forEach(t => {
+                    const rect = t.element.getBoundingClientRect();
+                    t.x = rect.left - playgroundRect.left;
+                    t.y = rect.top - playgroundRect.top;
+                });
+        
+                // DO NOT change selection on endDrag
+                // DO NOT change zIndexes for group
+                state.isDraggingMultiple = false;
+                state.originalPositions = null;
+        
+            } else if (state.draggingTile) {
+                // Commit position for the single dragged tile
+                const t = state.draggingTile;
+                const rect = t.element.getBoundingClientRect();
+                t.x = rect.left - playgroundRect.left;
+                t.y = rect.top - playgroundRect.top;
+        
+                // Single drag auto-selects that tile only
+                // Group selection unaffected if part of group
+                // We keep zIndex handling to allow reorder visuals
+                t.element.style.zIndex = state.tiles.indexOf(t);
+            }
+        
+            // Maintain selection on drag end
+            state.selectedTiles.forEach(tile => {
+                tile.element.classList.add('selected');
+            });
+        
+            state.draggingTile = null;
+            state.isDragging = false;
+        
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', endDrag);
+            document.removeEventListener('touchmove', drag);
+            document.removeEventListener('touchend', endDrag);
+        }
+
+        // Multi-select functionality (desktop only)
+        playground.addEventListener('mousedown', (e) => {
+            if (e.target === playground) {
+                state.isSelecting = true;
+                const rect = playground.getBoundingClientRect();
+                state.selectionStart.x = e.clientX - rect.left;
+                state.selectionStart.y = e.clientY - rect.top;
+                
+                if (!e.ctrlKey && !e.metaKey) {
+                    state.selectedTiles.forEach(t => t.element.classList.remove('selected'));
+                    state.selectedTiles.clear();
+                }
+                
+                selectionRect.style.left = state.selectionStart.x + 'px';
+                selectionRect.style.top = state.selectionStart.y + 'px';
+                selectionRect.style.width = '0px';
+                selectionRect.style.height = '0px';
+                selectionRect.style.display = 'block';
+            }
+        });
+
+        playground.addEventListener('mousemove', (e) => {
+            if (state.isSelecting) {
+                const rect = playground.getBoundingClientRect();
+                const currentX = e.clientX - rect.left;
+                const currentY = e.clientY - rect.top;
+                
+                const left = Math.min(state.selectionStart.x, currentX);
+                const top = Math.min(state.selectionStart.y, currentY);
+                const width = Math.abs(currentX - state.selectionStart.x);
+                const height = Math.abs(currentY - state.selectionStart.y);
+                
+                selectionRect.style.left = left + 'px';
+                selectionRect.style.top = top + 'px';
+                selectionRect.style.width = width + 'px';
+                selectionRect.style.height = height + 'px';
+                
+                // Check which tiles intersect with selection rectangle
+                const selRect = {
+                    left: left,
+                    top: top,
+                    right: left + width,
+                    bottom: top + height
+                };
+                
+                state.tiles.forEach(tileData => {
+                    const tileRect = {
+                        left: tileData.x,
+                        top: tileData.y,
+                        right: tileData.x + state.tileSize,
+                        bottom: tileData.y + state.tileSize
+                    };
+                    
+                    const intersects = !(selRect.right < tileRect.left || 
+                                       selRect.left > tileRect.right || 
+                                       selRect.bottom < tileRect.top || 
+                                       selRect.top > tileRect.bottom);
+                    
+                    if (intersects) {
+                        state.selectedTiles.add(tileData);
+                        tileData.element.classList.add('selected');
+                    } else if (!e.ctrlKey && !e.metaKey) {
+                        state.selectedTiles.delete(tileData);
+                        tileData.element.classList.remove('selected');
+                    }
+                });
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (state.isSelecting) {
+                state.isSelecting = false;
+                selectionRect.style.display = 'none';
+                state.wasDragging = true;
+            }
+        });
+
+
+        // Ctrl/Cmd + Click to add/remove from selection
+        playground.addEventListener('click', (e) => {
+            // If this click immediately follows a drag, ignore it once and reset the flag
+            if (state.wasDragging) {
+                state.wasDragging = false; // <-- critical so future clicks work
+                return;
+            }
+        
+            const tileEl = e.target.closest('.letter-tile');
+        
+            // Background click: clear selection (keep this if you want A-behavior)
+            if (!tileEl) {
+                state.selectedTiles.forEach(t => t.element.classList.remove('selected'));
+                state.selectedTiles.clear();
+                return;
+            }
+        
+            const tileData = state.tiles.find(t => t.element === tileEl);
+            if (!tileData) return;
+        
+            // Ctrl/Cmd + Click => toggle without clearing
+            if (e.ctrlKey || e.metaKey) {
+                if (state.selectedTiles.has(tileData)) {
+                    state.selectedTiles.delete(tileData);
+                    tileEl.classList.remove('selected');
+                } else {
+                    state.selectedTiles.add(tileData);
+                    tileEl.classList.add('selected');
+                }
+                return;
+            }
+        
+            // Plain click => select only this tile
+            state.selectedTiles.forEach(t => t.element.classList.remove('selected'));
+            state.selectedTiles.clear();
+            state.selectedTiles.add(tileData);
+            tileEl.classList.add('selected');
+        });
+
+        // Modal controls
+        styleBtn.addEventListener('click', () => {
+            styleModal.classList.add('active');
+            updatePreviewTile();
+        });
+
+        closeModal.addEventListener('click', () => {
+            styleModal.classList.remove('active');
+        });
+
+        styleModal.addEventListener('click', (e) => {
+            if (e.target === styleModal) {
+                styleModal.classList.remove('active');
+            }
+        });
+
+        // License modal controls
+        licenseLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            licenseModal.classList.add('active');
+        });
+
+        closeLicenseModal.addEventListener('click', () => {
+            licenseModal.classList.remove('active');
+        });
+
+        licenseModal.addEventListener('click', (e) => {
+            if (e.target === licenseModal) {
+                licenseModal.classList.remove('active');
+            }
+        });
+        
+        keyboardShortcutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            keyboardShortcutModal.classList.add('active');
+        });
+        
+        closeKeyboardShortcutModal.addEventListener('click', () => {
+            keyboardShortcutModal.classList.remove('active');
+        });
+        
+        keyboardShortcutModal.addEventListener('click', (e) => {
+            if (e.target === keyboardShortcutModal) {
+                keyboardShortcutModal.classList.remove('active');
+            }
+        });
+        
+
+        // Font family selector
+        fontFamily.addEventListener('change', (e) => {
+            const selectedFont = e.target.value;
+            
+            if (selectedFont) {
+                state.currentFont = selectedFont;
+                letterInput.style.fontFamily = selectedFont;
+                
+                state.tiles.forEach(tile => {
+                    const letterSpan = tile.element.querySelector('.tile-letter');
+                    letterSpan.style.fontFamily = selectedFont;
+                });
+            } else {
+                state.currentFont = null;
+                letterInput.style.fontFamily = '';
+                
+                state.tiles.forEach(tile => {
+                    const letterSpan = tile.element.querySelector('.tile-letter');
+                    letterSpan.style.fontFamily = '';
+                });
+            }
+            
+            updatePreviewTile();
+        });
+
+        // Font upload
+        fontUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const customFontName = 'CustomFont_' + Date.now();
+                    const fontFace = new FontFace(customFontName, event.target.result);
+                    
+                    fontFace.load().then((loadedFace) => {
+                        document.fonts.add(loadedFace);
+                        state.currentFont = customFontName;
+                        fontName.textContent = file.name;
+                        
+                        fontFamily.value = '';
+                        letterInput.style.fontFamily = customFontName;
+                        
+                        state.tiles.forEach(tile => {
+                            const letterSpan = tile.element.querySelector('.tile-letter');
+                            letterSpan.style.fontFamily = customFontName;
+                        });
+                        
+                        updatePreviewTile();
+                    }).catch((error) => {
+                        console.error('Font loading failed:', error);
+                        alert('Failed to load font. Please try another file.');
+                    });
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        });
+
+        // Font size adjustment
+//        fontSize.addEventListener('input', (e) => {
+//            const size = parseInt(e.target.value);
+//            state.fontSize = size;
+//            fontSizeValue.textContent = size;
+//
+//            letterInput.style.fontSize = (size * 1.2) + 'px';
+//
+//            state.tiles.forEach(tile => {
+//                const letterSpan = tile.element.querySelector('.tile-letter');
+//                letterSpan.style.fontSize = size + 'px';
+//            });
+//            applyLetterPosition(letterSpan);
+//            
+//            updatePreviewTile();
+//        });
+
+        fontSize.addEventListener('input', (e) => {
+            const size = parseInt(e.target.value);
+            state.fontSize = size;
+            fontSizeValue.textContent = size;
+        
+            letterInput.style.fontSize = (size * 1.2) + 'px';
+        
+            state.tiles.forEach(tileData => {
+                const letterSpan = tileData.element.querySelector('.tile-letter');
+                letterSpan.style.fontSize = size + 'px';
+                applyLetterPosition(letterSpan);
+            });
+        
+            updatePreviewTile();
+        });
+
+        // Tile size adjustment
+        tileSize.addEventListener('input', (e) => {
+            const newSize = parseInt(e.target.value);
+            const oldSize = state.tileSize;
+            state.tileSize = newSize;
+            tileSizeValue.textContent = newSize;
+
+            state.tiles.forEach(tileData => {
+                const centerX = tileData.x + (oldSize / 2);
+                const centerY = tileData.y + (oldSize / 2);
+
+                const newX = centerX - (newSize / 2);
+                const newY = centerY - (newSize / 2);
+
+                tileData.element.style.width = newSize + 'px';
+                tileData.element.style.height = newSize + 'px';
+                tileData.element.style.left = newX + 'px';
+                tileData.element.style.top = newY + 'px';
+
+                tileData.x = newX;
+                tileData.y = newY;
+            });
+            
+            updatePreviewTile();
+        });
+
+        // Font color
+        fontColor.addEventListener('change', (e) => {
+            if (e.target.value === 'custom') {
+                const hexValue = customFontColorHex.value;
+                if (hexValue && /^#[0-9A-F]{6}$/i.test(hexValue)) {
+                    state.fontColor = hexValue;
+                } else {
+                    return; // Don't change if custom hex is invalid
+                }
+            } else {
+                state.fontColor = e.target.value;
+            }
+            
+            state.tiles.forEach(tile => {
+                const letterSpan = tile.element.querySelector('.tile-letter');
+                letterSpan.style.color = state.fontColor;
+            });
+            
+            updatePreviewTile();
+        });
+
+        customFontColorHex.addEventListener('input', (e) => {
+            const hexValue = e.target.value;
+            if (/^#[0-9A-F]{6}$/i.test(hexValue)) {
+                fontColor.value = 'custom';
+                state.fontColor = hexValue;
+                
+                state.tiles.forEach(tile => {
+                    const letterSpan = tile.element.querySelector('.tile-letter');
+                    letterSpan.style.color = state.fontColor;
+                });
+                
+                updatePreviewTile();
+            }
+        });
+
+        // Tile color
+        tileColor.addEventListener('change', (e) => {
+            let newColor;
+            if (e.target.value === 'custom') {
+                const hexValue = customTileColorHex.value;
+                if (hexValue && /^#[0-9A-F]{6}$/i.test(hexValue)) {
+                    newColor = hexValue;
+                } else {
+                    return; // Don't change if custom hex is invalid
+                }
+            } else {
+                newColor = e.target.value;
+            }
+            
+            const colors = calculateTileColors(newColor);
+            state.tileColor = colors.base;
+            state.tileColorLight = colors.light;
+            state.tileColorDark = colors.dark;
+            state.tileColorBorder = colors.border;
+            
+            // Regenerate tile images
+            state.tileImage3D = generateTileImage(true);
+            state.tileImageFlat = generateTileImage(false);
+            
+            // Update all existing tiles
+            const tileImg = state.tileStyle === '3d' ? state.tileImage3D : state.tileImageFlat;
+            state.tiles.forEach(tile => {
+                const bg = tile.element.querySelector('.tile-bg');
+                bg.src = tileImg;
+            });
+            
+            updatePreviewTile();
+        });
+
+        customTileColorHex.addEventListener('input', (e) => {
+            const hexValue = e.target.value;
+            if (/^#[0-9A-F]{6}$/i.test(hexValue)) {
+                tileColor.value = 'custom';
+                
+                const colors = calculateTileColors(hexValue);
+                state.tileColor = colors.base;
+                state.tileColorLight = colors.light;
+                state.tileColorDark = colors.dark;
+                state.tileColorBorder = colors.border;
+                
+                // Regenerate tile images
+                state.tileImage3D = generateTileImage(true);
+                state.tileImageFlat = generateTileImage(false);
+                
+                // Update all existing tiles
+                const tileImg = state.tileStyle === '3d' ? state.tileImage3D : state.tileImageFlat;
+                state.tiles.forEach(tile => {
+                    const bg = tile.element.querySelector('.tile-bg');
+                    bg.src = tileImg;
+                });
+                
+                updatePreviewTile();
+            }
+        });
+
+        // Tile style (3D vs Flat)
+        document.querySelectorAll('input[name="tileStyle"]').forEach(radio => {
+          radio.addEventListener('change', (e) => {
+            state.tileStyle = e.target.value;
+            const tileImg = e.target.value === '3d' ? state.tileImage3D : state.tileImageFlat;
+        
+            state.tiles.forEach(tile => {
+              const bg = tile.element.querySelector('.tile-bg');
+              bg.src = tileImg;
+              bg.style.filter = state.tileStyle === '3d'
+                ? 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
+                : 'none';
+
+              const letterSpan = tile.element.querySelector('.tile-letter');
+              applyLetterPosition(letterSpan);
+            });
+        
+            updatePreviewTile();
+          });
+        });
+
+        // Clear playground
+        clearBtn.addEventListener('click', () => {
+            saveState();
+            state.tiles.forEach(tile => tile.element.remove());
+            state.tiles = [];
+            state.selectedTiles.clear();
+            letterInput.value = '';
+            letterInput.dataset.previousValue = '';
+        });
+
+        // Reset all
+        resetBtn.addEventListener('click', () => {
+            saveState();
+        
+            // Clear without triggering Clear button handler
+            state.tiles.forEach(tile => tile.element.remove());
+            state.tiles = [];
+            state.selectedTiles.clear();
+            letterInput.value = '';
+            letterInput.dataset.previousValue = '';
+        
+            // Reset to defaults
+            state.currentFont = null;
+            state.fontSize = 32;
+            state.tileSize = 80;
+            state.fontColor = '#1a1a2e';
+        
+            const defaultTileColor = '#e8dcc4';
+            const colors = calculateTileColors(defaultTileColor);
+            state.tileColor = colors.base;
+            state.tileColorLight = colors.light;
+            state.tileColorDark = colors.dark;
+            state.tileColorBorder = colors.border;
+            state.tileStyle = '3d';
+        
+            // Regenerate tile images
+            state.tileImage3D = generateTileImage(true);
+            state.tileImageFlat = generateTileImage(false);
+        
+            fontSize.value = 32;
+            fontSizeValue.textContent = '32';
+            tileSize.value = 80;
+            tileSizeValue.textContent = '80';
+            fontFamily.value = '';
+            fontColor.value = '#1a1a2e';
+            tileColor.value = '#e8dcc4';
+            customFontColorHex.value = '';
+            customTileColorHex.value = '';
+            letterInput.style.fontFamily = '';
+            letterInput.style.fontSize = '';
+            fontName.textContent = 'No custom font loaded';
+            fontUpload.value = '';
+        
+            document.querySelector('input[name="tileStyle"][value="3d"]').checked = true;
+        
+            updatePreviewTile();
+        });
+        
+        function layoutSelectedTiles(type) {
+          saveState();
+          if (state.selectedTiles.size < 2) return;
+          
+          const tiles = [...state.selectedTiles];
+          const step = state.tileSize + 4; // spacing for grouping
+          const playgroundRect = playground.getBoundingClientRect();
+          
+          // Extract current positions
+          const positions = tiles.map(t => ({ tile: t, x: t.x, y: t.y }));
+          
+          // Sort by left then top
+          positions.sort((a, b) => a.x - b.x || a.y - b.y);
+          
+          const minX = Math.min(...positions.map(p => p.x));
+          const maxX = Math.max(...positions.map(p => p.x));
+          const minY = Math.min(...positions.map(p => p.y));
+          const maxY = Math.max(...positions.map(p => p.y));
+          
+          if (type === 'group') {
+            // Tight horizontal row
+            positions.forEach((p, i) => {
+              p.tile.x = minX + i * step;
+              p.tile.y = minY;
+            });
+          }
+          
+          if (type === 'align-vertical') {
+            // Same X based on average
+            const avgX = (minX + maxX) / 2;
+            positions.forEach(p => { p.tile.x = avgX; });
+          }
+          
+          if (type === 'align-horizontal') {
+            // Same Y based on average
+            const avgY = (minY + maxY) / 2;
+            positions.forEach(p => { p.tile.y = avgY; });
+          }
+          
+          if (type === 'distribute-h') {
+            // Fix first and last, distribute between them
+            const left = positions[0].x;
+            const right = positions[positions.length - 1].x;
+            const space = (right - left) / (positions.length - 1);
+            positions.forEach((p, i) => {
+              p.tile.x = left + i * space;
+            });
+          }
+          
+          if (type === 'distribute-v') {
+            // Fix top and bottom, distribute between them
+            const top = positions[0].y;
+            const bottom = positions[positions.length - 1].y;
+            const space = (bottom - top) / (positions.length - 1);
+            positions.forEach((p, i) => {
+              p.tile.y = top + i * space;
+            });
+          }
+          
+          // Push back to DOM
+          positions.forEach(p => {
+            p.tile.element.style.left = p.tile.x + 'px';
+            p.tile.element.style.top = p.tile.y + 'px';
+          });
+        }
+
+        // Initialize
+        letterInput.dataset.previousValue = '';
+        updatePreviewTile();
+    </script>
+</body>
+</html>
