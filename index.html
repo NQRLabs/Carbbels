@@ -33,6 +33,18 @@
     <link rel="icon" type="image/png" sizes="192x192" href="./assets/images/android-chrome-192x192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="./assets/images/android-chrome-512x512.png">
     <style>
+    :root {
+            --bg: #0c1020;
+            --card: #151c3b;
+            --ink: #eef1ff;
+            --dim: #b9c6ef;
+            --border: #2b3868;
+            --accent: #1fc9aa;
+            --accent-hover: #18b79a;
+            --accent-dark: #17b399;
+            --input-bg: #0f1432;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -40,12 +52,15 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #e0e0e0;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--ink);
             min-height: 100vh;
             padding: 20px;
             overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .container {
@@ -75,12 +90,12 @@
         }
 
         .controls {
-            background: rgba(15, 52, 96, 0.3);
-            border: 1px solid #0f3460;
-            border-radius: 8px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
             padding: 20px;
             margin-bottom: 20px;
-            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,.35);
         }
 
         .control-group {
@@ -152,13 +167,18 @@
         }
 
         #playground {
-            background: rgba(22, 33, 62, 0.5);
-            border: 2px solid #0f3460;
-            border-radius: 8px;
-            min-height: 500px;
+            background: rgba(12, 16, 32, 0.25);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            min-height: 600px;
+            width: 100%;
+            max-width: 1200px; /* match .container max-width */
+            margin: 0 auto;
             position: relative;
             overflow: hidden;
             touch-action: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,.35);
+            padding: 20px;
         }
 
         .letter-tile {
@@ -492,15 +512,15 @@
                 <button class="btn" id="resetBtn">Reset All</button>
             </div>
         </div>
+    </div>
 
         <div id="playground">
             <div id="selectionRect"></div>
         </div>
 
-        <footer style="text-align: center; margin-top: 20px; padding: 20px; color: #a0a0a0; font-size: 0.85em; border-top: 1px solid #0f3460;">
+        <footer style="text-align: center; margin-top: 20px; padding: 20px; color: var(--dim); font-size: 0.75em; border-top: 1px solid rgba(43, 56, 104, 0.3);">
             <a href="#" id="licenseLink" style="color: #a0a0a0; text-decoration: none; transition: color 0.3s ease;" onmouseover="this.style.color='#4ecdc4'" onmouseout="this.style.color='#a0a0a0'">Â© 2025 NQR â€¢ Licensed under MIT â€¢ Click for details</a>
         </footer>
-    </div>
 
     <!-- Style Modal -->
     <div id="styleModal" class="modal">
@@ -888,7 +908,8 @@
 
         // Unified letter placement styling
         function applyLetterPosition(letterSpan) {
-          const top = state.tileStyle === '3d' ? '42.5%' : '50%';
+          //const top = state.tileStyle === '3d' ? '42.5%' : '50%';
+          const top = state.tileStyle === '3d' ? '37%' : '50%';
           letterSpan.style.top = top;
           letterSpan.style.transform = 'translate(-50%, -50%)';
           letterSpan.style.textShadow = 'none';
@@ -981,7 +1002,7 @@
               ctx.fillRect(0, 0, w, h);
               ctx.restore();
               
-              // 4) Thin BEVEL SHADOW LINE near the bottom edge (the “lip” you want)
+              // 4) Thin BEVEL SHADOW LINE near the bottom edge (the lip you want)
               ctx.fillStyle = bevelShadow;
               ctx.fillRect(0, bevelY, w, 2); // 2px band; tweak thickness if needed
               
@@ -1141,7 +1162,8 @@
               ? 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
               : 'none';
             
-            const letterTop = state.tileStyle === '3d' ? '42.5%' : '50%';
+            //const letterTop = state.tileStyle === '3d' ? '42.5%' : '50%';
+            const letterTop = state.tileStyle === '3d' ? '37%' : '50%';
             const letterShadow = 'none';
             
             previewTile.innerHTML = `
@@ -1977,28 +1999,12 @@
         });
 
         // Font size adjustment
-//        fontSize.addEventListener('input', (e) => {
-//            const size = parseInt(e.target.value);
-//            state.fontSize = size;
-//            fontSizeValue.textContent = size;
-//
-//            letterInput.style.fontSize = (size * 1.2) + 'px';
-//
-//            state.tiles.forEach(tile => {
-//                const letterSpan = tile.element.querySelector('.tile-letter');
-//                letterSpan.style.fontSize = size + 'px';
-//            });
-//            applyLetterPosition(letterSpan);
-//            
-//            updatePreviewTile();
-//        });
-
         fontSize.addEventListener('input', (e) => {
             const size = parseInt(e.target.value);
             state.fontSize = size;
             fontSizeValue.textContent = size;
         
-            letterInput.style.fontSize = (size * 1.2) + 'px';
+            //letterInput.style.fontSize = (size * 1.2) + 'px';
         
             state.tiles.forEach(tileData => {
                 const letterSpan = tileData.element.querySelector('.tile-letter');
@@ -2421,7 +2427,7 @@ if (bgPreset === 'default') {
                 const centerX = x + state.tileSize / 2;
                 const centerY = state.tileStyle === '3d'
                   ? y + state.tileSize * 0.425
-                  : y + state.tileSize * 0.5;
+                  : y + state.tileSize * 0.55;
                 ctx.fillText(letterSpan.textContent, centerX, centerY);
               }
             }
