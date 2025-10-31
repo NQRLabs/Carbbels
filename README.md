@@ -1,109 +1,103 @@
 ![Sandbox screenshot](./assets/images/screenshot.png)
 # Carbbels
 
-Carbbels is a manual anagram sandbox designed for puzzle-solving and exploratory wordplay. It is intentionally **not a game**. Instead, it is a flexible workspace where letters can be typed, dragged, grouped, reordered visually, copied into different sequences, and used for puzzle deduction. Originally built to support an Alternate Reality Game (ARG).
+Carbbels is a manual anagram sandbox designed for puzzle-solving and exploratory wordplay. It is intentionally not a game. Instead, it is a flexible workspace where letters can be typed, dragged, grouped, visually reordered, copied into different sequences, and used for puzzle deduction. Originally built to support an Alternate Reality Game (ARG).
 
 ---
 
-## ? Features
+## Features
 
-### ?? Text ? Tile Sync
+### Text and Tile Sync
 - Typing automatically creates draggable letter tiles
 - Deleting in the textbox removes the corresponding tiles
 - Dragging or deleting tiles updates the textbox
 - Pasting multiple characters spreads tiles into free positions
 
-### ?? Sandbox Interaction
+### Sandbox Interaction
 - Drag single or multiple tiles freely across the grid
-- Box-selection to select groups quickly
-- Click + Ctrl to toggle tile in/out of the selection group
-- Selection persists across group movements
-- Snap-free movement encourages creative layouts
+- Box-select to select groups quickly
+- Ctrl + Click to toggle individual tiles in the selection
+- Selection persists across movement
+- Snap-free movement helps experimental layouts
 
-### ?? Puzzle Tools
-- Layout shortcuts for rapid rearrangement:
-  - `G`: Group horizontally
-  - `H`: Evenly distribute horizontally
-  - `V`: Evenly distribute vertically
-  - Arrow keys: Align tiles to shared axis
+### Puzzle Tools
+- `G`: Group selected tiles horizontally
+- `H`: Evenly distribute selected tiles horizontally
+- `V`: Evenly distribute selected tiles vertically
+- Arrow keys: Align tiles to a shared axis
 
-### ? Copy Visual Order
-- **Ctrl + Shift + C**  
-  Copy letters in **left-to-right, top-to-bottom** order  
-  Useful when the playable layout spells something the typed word doesn't
+### Copy Visual Order
+- **Ctrl + Shift + C**: Copy tile letters in visual left-to-right, top-to-bottom order
 
-### ? Undo / Redo
-- **Ctrl + Z** undo (multi-step)
-- **Ctrl + Y** redo (multi-step)
-- Every meaningful action is reversible
+### Undo / Redo
+- **Ctrl + Z**: Undo last action
+- **Ctrl + Y**: Redo undone action
 
 ---
 
-## ?? Why Carbbels Exists
+## Why Carbbels Exists
 
-Unlike typical unscramble-the-word UIs, Carbbels is about:
-- Experimentation
-- Interpretation of letter **arrangement**
-- Insight through spatial reasoning
+Carbbels was created for situations where:
+- Layout conveys meaning
+- Words may need physical reordering
+- Discovery happens through experimentation
 
-Tiles are objects you manipulate, not fixed positions.
+Tiles remain movable objects rather than fixed positions.
 
-Carbbels supports puzzle designers and players who think:
-> “Maybe the pattern matters as much as the word.”
+> Some puzzles reveal their answers only when you move the letters around.
 
 ---
 
-## ?? Keyboard + Mouse Reference
+## Keyboard and Mouse Reference
 
 | Action | Shortcut / Gesture |
 |--------|------------------|
-| Add tiles | Type letters |
+| Add tiles from text | Type letters |
 | Delete selection | Delete / Backspace |
-| Copy sandbox word (visual order) | Ctrl + Shift + C |
+| Copy visual order | Ctrl + Shift + C |
 | Undo | Ctrl + Z |
 | Redo | Ctrl + Y |
 | Select all tiles | Ctrl + A |
-| Toggle selection | Ctrl + Click |
+| Toggle selected tile | Ctrl + Click |
 | Box-select group | Click + Drag background |
-| Move selection | Drag on tile |
-| Align vertically | ? / ? |
-| Align horizontally | ? / ? |
+| Move selection | Drag a tile |
+| Align vertically | Left / Right Arrow |
+| Align horizontally | Up / Down Arrow |
 | Group row | G |
 | Evenly distribute horizontally | H |
 | Evenly distribute vertically | V |
 
 ---
 
-## ?? Tech Overview
+## Tech Overview
 
-- HTML / CSS UI
+- HTML / CSS interface
 - Vanilla JavaScript state engine
 - No framework dependencies
-- Local-only — no server or tracking
-- Designed to embed easily in a webflow / CMS / puzzle site
+- Local-only (no server required)
+- Easy to embed in ARGs, puzzle hunts, and escape-room-style web pages
 
 ---
 
-## ?? Future Ideas
+## Future Ideas
 
-- Save / Load layouts
-- Custom puzzle exports (sequence metadata)
-- Mobile touch enhancements
-- Tile rotation for even deeper wordplay
-- Grid “snap-to” mode toggle
-
----
-
-## ?? License
-
-MIT License — free to modify and use anywhere.  
-Attribution appreciated if used in public puzzles. ??
+- Save / load tile layouts
+- Export sequences for puzzle design
+- Enhanced mobile touch support
+- Tile rotation for more complex puzzles
+- Optional grid snapping
 
 ---
 
-## ?? Credit
+## License
 
-Designed for creative thinkers and ARG explorers who know that sometimes the answer is found by *moving the letters around*.
+MIT License — free for modification and use.  
+Attribution appreciated if used publicly.
 
-If you use Carbbels in a puzzle, I’d love to hear about it!
+---
 
+## Credit
+
+Created for puzzle solvers, game designers, and curious thinkers interested in the deeper meaning that emerges when letters can move.
+
+If you use Carbbels in a puzzle or ARG, I’d love to hear about it.

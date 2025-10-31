@@ -56,8 +56,6 @@
         header {
             text-align: center;
             margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #0f3460;
         }
 
         .logo {
@@ -67,10 +65,13 @@
             display: block;
         }
 
+        .hidden { display: none !important; }
+
         .subtitle {
             font-size: 0.9em;
             color: #a0a0a0;
             letter-spacing: 1px;
+            font-style: italic;
         }
 
         .controls {
@@ -390,10 +391,20 @@
             justify-content: center;
             align-items: center;
             padding: 30px;
-            background: rgba(22, 33, 62, 0.3);
+            background: rgba(22, 33, 62, 0.5);
             border: 1px solid #0f3460;
             border-radius: 8px;
             margin-bottom: 20px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        #customBgColorGroup,
+        #customBgImageGroup,
+        #customFontColorGroup,
+        #customTileColorGroup,
+        #customFontUploadGroup {
+            display: none;
         }
 
         .preview-tile {
@@ -475,6 +486,8 @@
 
             <div class="button-group">
                 <button class="btn btn-style" id="styleBtn">Style</button>
+                <button class="btn btn-style" id="copyTextBtn">Copy Tile Text</button>
+                <button class="btn btn-style" id="downloadPngBtn">Download as PNG</button>
                 <button class="btn" id="clearBtn">Clear Playground</button>
                 <button class="btn" id="resetBtn">Reset All</button>
             </div>
@@ -493,7 +506,7 @@
     <div id="styleModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">Tile Style Settings</h2>
+                <h2 class="modal-title">Style Settings</h2>
                 <button class="close-btn" id="closeModal">&times;</button>
             </div>
 
@@ -505,6 +518,7 @@
                 <label for="fontFamily">Font Family</label>
                 <select id="fontFamily">
                     <option value="">System Default</option>
+                    <option value="customFont">Custom Font</option>
                     <option value="Arial, sans-serif">Arial</option>
                     <option value="'Arial Black', sans-serif">Arial Black</option>
                     <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
@@ -524,7 +538,7 @@
                 </select>
             </div>
 
-            <div class="modal-section">
+            <div class="modal-section" id="customFontUploadGroup">
                 <label for="fontUpload">Custom Font Upload</label>
                 <label for="fontUpload" class="file-upload-btn">Upload Font File (.ttf, .otf, .woff)</label>
                 <input type="file" id="fontUpload" accept=".ttf,.otf,.woff,.woff2">
@@ -534,11 +548,6 @@
             <div class="modal-section">
                 <label for="fontSize">Font Size: <span class="range-value" id="fontSizeValue">32</span>px</label>
                 <input type="range" id="fontSize" min="16" max="72" value="32">
-            </div>
-
-            <div class="modal-section">
-                <label for="tileSize">Tile Size: <span class="range-value" id="tileSizeValue">80</span>px</label>
-                <input type="range" id="tileSize" min="40" max="150" value="80">
             </div>
 
             <div class="modal-section">
@@ -554,10 +563,15 @@
                     <option value="#800080">Purple</option>
                     <option value="custom">Custom Hex</option>
                 </select>
-                <div class="hex-input-group" style="margin-top: 10px;">
+                <div class="hex-input-group" style="margin-top: 10px;" id="customFontColorGroup">
                     <label for="customFontColorHex" style="margin: 0; min-width: 150px;">Custom Font Color:</label>
                     <input type="text" id="customFontColorHex" placeholder="#000000" maxlength="7">
                 </div>
+            </div>
+
+            <div class="modal-section">
+                <label for="tileSize">Tile Size: <span class="range-value" id="tileSizeValue">80</span>px</label>
+                <input type="range" id="tileSize" min="40" max="150" value="80">
             </div>
 
             <div class="modal-section">
@@ -576,24 +590,48 @@
                     <option value="#90EE90">Light Green</option>
                     <option value="custom">Custom Hex</option>
                 </select>
-                <div class="hex-input-group" style="margin-top: 10px;">
+                <div class="hex-input-group" style="margin-top: 10px;" id="customTileColorGroup">
                     <label for="customTileColorHex" style="margin: 0; min-width: 150px;">Custom Tile Color:</label>
                     <input type="text" id="customTileColorHex" placeholder="#e8dcc4" maxlength="7">
                 </div>
             </div>
 
             <div class="modal-section">
-                <label>Tile Style</label>
-                <div class="style-options">
-                    <label class="style-option">
-                        <input type="radio" name="tileStyle" value="3d" checked>
-                        <span>3D Tiles</span>
-                    </label>
-                    <label class="style-option">
-                        <input type="radio" name="tileStyle" value="flat">
-                        <span>Flat Tiles</span>
-                    </label>
+                <label for="tileStyleSelect">Tile Style</label>
+                <select id="tileStyleSelect">
+                    <option value="3d" selected>3D Tiles</option>
+                    <option value="flat">Flat Tiles</option>
+                </select>
+            </div>
+
+            <div class="modal-section">
+                <label for="bgPreset">Background</label>
+                <select id="bgPreset">
+                    <option value="default" selected>Dark Blue (Default)</option>
+                    <option value="white">White</option>
+                    <option value="black">Black</option>
+                    <option value="green">Forest Green</option>
+                    <option value="slate">Slate / Navy</option>
+                    <option value="parchment">Parchment</option>
+                    <option value="teal">Teal</option>
+                    <option value="bubbles">Colorful Bubbles</option>
+                    <option value="waves">Gradient Waves</option>
+                    <option value="customColor">Custom Color</option>
+                    <option value="customImage">Custom Image</option>
+                </select>
+                <div class="hex-input-group" style="margin-top: 10px;" id="customBgColorGroup">
+                    <label for="customBgColorHex" style="margin: 0; min-width: 150px;">Custom BG Color:</label>
+                    <input type="text" id="customBgColorHex" placeholder="#16213e" maxlength="7">
                 </div>
+                <div style="margin-top: 10px;" id="customBgImageGroup">
+                    <label for="bgImageUpload" class="file-upload-btn">Upload Background Image</label>
+                    <input type="file" id="bgImageUpload" accept="image/*">
+                    <div class="info-text" id="bgImageName">No image loaded</div>
+                </div>
+            </div>
+
+            <div class="modal-section">
+                <button class="btn" id="resetStyleBtn" style="width: 100%;">Reset Style to Defaults</button>
             </div>
         </div>
     </div>
@@ -602,7 +640,7 @@
     <div id="keyboardShortcutModal" class="modal">
       <div class="modal-content">
         <div class="modal-header">
-          <h2 class="modal-title">Keyboard Shortcuts</h2>
+          <h2 class="modal-title">Controls & Shortcuts</h2>
           <button class="close-btn" id="closeKeyboardShortcutModal">&times;</button>
         </div>
         <div style="line-height:1.6;color:#e0e0e0;">
@@ -616,7 +654,6 @@
     
           <p><strong>Delete / Backspace</strong> - Delete selected tiles</p>
           <p><strong>Ctrl + A</strong> - Select all tiles</p>
-          <p><strong>Ctrl + Shift + C</strong> - Copy tile letters in visual (left-right, top-bottom) order</p>
     
           <hr style="border-color:#444;">
     
@@ -692,7 +729,10 @@
                 font: state.currentFont,
                 fontSize: state.fontSize,
                 tileStyle: state.tileStyle,
-                tileColor: state.tileColor
+                tileColor: state.tileColor,
+                bgPreset: state.bgPreset,
+                bgCustomColor: state.bgCustomColor,
+                bgCustomImage: state.bgCustomImage
             };
         }
 
@@ -728,6 +768,9 @@
             state.fontSize = snapshot.fontSize;
             state.tileStyle = snapshot.tileStyle;
             state.tileColor = snapshot.tileColor;
+            state.bgPreset = snapshot.bgPreset || 'default';
+            state.bgCustomColor = snapshot.bgCustomColor || null;
+            state.bgCustomImage = snapshot.bgCustomImage || null;
         
             // Ensure images are set
             state.tileImage3D = generateTileImage(true);
@@ -737,6 +780,9 @@
             snapshot.tiles.forEach((t, i) => {
                 createTile(t.letter, t.x ?? findEmptySpace().x, t.y ?? findEmptySpace().y, i);
             });
+            
+            // Restore background
+            updateBackground(playground);
             
             // Restore focus and cursor position if needed
             if (hadFocus) {
@@ -750,7 +796,7 @@
         }
 
         function resyncTileIndexesFromText() {
-            const text = letterInput.value.toUpperCase();
+            const text = letterInput.value;
         
             // Build a new sorted array based on text order
             let newArray = [];
@@ -871,7 +917,7 @@
                 state.tiles.splice(index, 1);
         
                 // Remove from textbox string by index
-                const text = letterInput.value.toUpperCase();
+                const text = letterInput.value;
                 const newText = text.slice(0, index) + text.slice(index + 1);
                 letterInput.value = newText;
                 letterInput.dataset.previousValue = newText;
@@ -1009,6 +1055,7 @@
         const state = {
             tiles: [],
             selectedTiles: new Set(),
+            lastClickedTile: null,
             currentFont: null,
             fontSize: 32,
             tileSize: 80,
@@ -1020,6 +1067,9 @@
             tileStyle: '3d',
             tileImage3D: null,
             tileImageFlat: null,
+            bgPreset: 'default',
+            bgCustomColor: null,
+            bgCustomImage: null,
             draggedTile: null,
             offsetX: 0,
             offsetY: 0,
@@ -1057,10 +1107,23 @@
         const fontSizeValue = document.getElementById('fontSizeValue');
         const tileSize = document.getElementById('tileSize');
         const tileSizeValue = document.getElementById('tileSizeValue');
+        const tileStyleSelect = document.getElementById('tileStyleSelect');
+        const customFontColorGroup = document.getElementById('customFontColorGroup');
+        const customTileColorGroup = document.getElementById('customTileColorGroup');
+        const customFontUploadGroup = document.getElementById('customFontUploadGroup');
         const fontColor = document.getElementById('fontColor');
         const customFontColorHex = document.getElementById('customFontColorHex');
         const tileColor = document.getElementById('tileColor');
         const customTileColorHex = document.getElementById('customTileColorHex');
+        const bgPreset = document.getElementById('bgPreset');
+        const customBgColorHex = document.getElementById('customBgColorHex');
+        const customBgColorGroup = document.getElementById('customBgColorGroup');
+        const bgImageUpload = document.getElementById('bgImageUpload');
+        const customBgImageGroup = document.getElementById('customBgImageGroup');
+        const bgImageName = document.getElementById('bgImageName');
+        const resetStyleBtn = document.getElementById('resetStyleBtn');
+        const copyTextBtn = document.getElementById('copyTextBtn');
+        const downloadPngBtn = document.getElementById('downloadPngBtn');
         const clearBtn = document.getElementById('clearBtn');
         const resetBtn = document.getElementById('resetBtn');
         const selectionRect = document.getElementById('selectionRect');
@@ -1085,6 +1148,138 @@
               <img class="tile-bg" src="${tileImg}" style="width:100%;height:100%;position:absolute;top:0;left:0;filter:${imgFilter};">
               <span class="tile-letter" style="position:absolute;top:${letterTop};left:50%;transform:translate(-50%,-50%); font-size:${state.fontSize}px;font-weight:bold;color:${state.fontColor}; ${state.currentFont ? 'font-family:'+state.currentFont+';' : ''} text-shadow:${letterShadow};pointer-events:none;">A</span>
             `;
+            
+            // Update preview background
+            updateBackground(document.querySelector('.preview-tile-container'));
+        }
+
+        // Generate background patterns
+        function generateBubblePattern() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 400;
+            canvas.height = 400;
+            const ctx = canvas.getContext('2d');
+            
+            // Gradient background
+            const gradient = ctx.createLinearGradient(0, 0, 400, 400);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 400, 400);
+            
+            // Add colorful bubbles
+            const colors = ['#ff6b9d', '#c768ff', '#4ecdc4', '#ffe66d', '#ff6b6b'];
+            for (let i = 0; i < 30; i++) {
+                const x = Math.random() * 400;
+                const y = Math.random() * 400;
+                const r = 10 + Math.random() * 40;
+                ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)] + '40';
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            return canvas.toDataURL();
+        }
+
+        function generateWavePattern() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 800;
+            canvas.height = 400;
+            const ctx = canvas.getContext('2d');
+            
+            // Multi-color gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(0.5, '#764ba2');
+            gradient.addColorStop(1, '#f093fb');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 800, 400);
+            
+            // Add wave patterns
+            for (let i = 0; i < 3; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, 200 + i * 30);
+                for (let x = 0; x <= 800; x += 10) {
+                    const y = 200 + i * 30 + Math.sin(x * 0.02 + i) * 30;
+                    ctx.lineTo(x, y);
+                }
+                ctx.strokeStyle = `rgba(255, 255, 255, ${0.2 - i * 0.05})`;
+                ctx.lineWidth = 3;
+                ctx.stroke();
+            }
+            
+            return canvas.toDataURL();
+        }
+
+        function updateBackground(element) {
+          const preset = state.bgPreset;
+        
+          switch (preset) {
+            case 'default':
+              element.style.background = '#16213E';   // dark blue
+              break;
+        
+            case 'white':
+              element.style.background = '#ffffff';
+              break;
+        
+            case 'black':
+              element.style.background = '#000000';
+              break;
+        
+            // ? fixed "forest green" (real forest green tone)
+            case 'green':
+              element.style.background = '#228B22';   // ForestGreen CSS color
+              break;
+        
+            // ? slate / navy tone
+            case 'slate':
+              element.style.background = '#2F3E46';   // deep gray-blue
+              break;
+        
+            // ? parchment tone (light warm beige)
+            case 'parchment':
+              element.style.background = '#F5E6CA';   // warm paper-like tone
+              break;
+        
+            // ? teal tone (balanced between blue and green)
+            case 'teal':
+              element.style.background = '#008080';   // pure teal
+              break;
+        
+            case 'bubbles':
+              if (!state.bgBubblesPattern) {
+                state.bgBubblesPattern = generateBubblePattern();
+              }
+              element.style.background = `url(${state.bgBubblesPattern})`;
+              element.style.backgroundSize = 'cover';
+              element.style.backgroundPosition = 'center';
+              break;
+        
+            case 'waves':
+              if (!state.bgWavesPattern) {
+                state.bgWavesPattern = generateWavePattern();
+              }
+              element.style.background = `url(${state.bgWavesPattern})`;
+              element.style.backgroundSize = 'cover';
+              element.style.backgroundPosition = 'center';
+              break;
+        
+            case 'customColor':
+              if (state.bgCustomColor) {
+                element.style.background = state.bgCustomColor;
+              }
+              break;
+        
+            case 'customImage':
+              if (state.bgCustomImage) {
+                element.style.background = `url(${state.bgCustomImage})`;
+                element.style.backgroundSize = 'cover';
+                element.style.backgroundPosition = 'center';
+              }
+              break;
+          }
         }
 
         // Create a new tile
@@ -1188,29 +1383,25 @@
         
             const text = ordered.map(tile => tile.letter).join('');
         
-            navigator.clipboard.writeText(text)
-                .then(() => {
-                    console.log("Copied visual order:", text);
-                })
-                .catch(err => {
-                    console.warn("Clipboard write failed:", err);
-                });
+           navigator.clipboard.writeText(text).catch(err => {
+                console.warn("Clipboard write failed:", err);
+           });
         }
 
         // Handle input changes
         function letterInputHandler(e) {
             saveState();
-            const newText = e.target.value.toUpperCase();
+            const newText = e.target.value;
             const oldText = letterInput.dataset.previousValue || '';
         
             // Safety check: if tile count doesn't match old text length, rebuild everything
             if (state.tiles.length !== oldText.length) {
-                console.warn('Tile/text sync mismatch detected. Rebuilding tiles...', {
-                    tileCount: state.tiles.length,
-                    oldTextLength: oldText.length,
-                    oldText: oldText,
-                    newText: newText
-                });
+//                console.warn('Tile/text sync mismatch detected. Rebuilding tiles...', {
+//                    tileCount: state.tiles.length,
+//                    oldTextLength: oldText.length,
+//                    oldText: oldText,
+//                    newText: newText
+//                });
                 rebuildAllTilesFromText(newText);
                 letterInput.dataset.previousValue = newText;
                 return;
@@ -1347,13 +1538,6 @@
             keyboardShortcutModal.classList.remove('active');
           }
 
-          // Ctrl+Shift+C: Copy visual tile order (ARG helper)
-          if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'c') {
-              e.preventDefault();
-              copyVisualOrderToClipboard();
-              return;
-          }
-
           // Undo: Ctrl+Z
           if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
               e.preventDefault();
@@ -1423,17 +1607,20 @@
           };
         
           // Selection rules on drag start:
-          // If dragging a non-selected tile, select only it
+          // If Ctrl/Shift is held, don't modify selection (let click handler deal with it)
+          // If dragging a non-selected tile (without modifiers), select only it
           // If dragging a selected tile, keep the whole selection
-          if (!state.selectedTiles.has(tileData)) {
+          if (e.ctrlKey || e.metaKey || e.shiftKey) {
+              // Modifier key held - don't change selection during drag start
+              // The click handler will deal with adding/removing from selection
+          } else if (!state.selectedTiles.has(tileData)) {
               state.selectedTiles.forEach(t => t.element.classList.remove('selected'));
               state.selectedTiles.clear();
               state.selectedTiles.add(tileData);
               tileEl.classList.add('selected');
           } else {
               state.selectedTiles.forEach(t => t.element.classList.add('selected'));
-          }
-        
+          }       
           // For multi-drag, capture the selection's original positions once
           state.multiDragStart = { x: clientX, y: clientY };
           if (state.selectedTiles.size > 1 && state.selectedTiles.has(tileData)) {
@@ -1614,27 +1801,33 @@
                 state.isSelecting = false;
                 selectionRect.style.display = 'none';
                 state.wasDragging = true;
+                
+                // Update last clicked tile to first selected tile for shift+click
+                if (state.selectedTiles.size > 0) {
+                    state.lastClickedTile = [...state.selectedTiles][0];
+                }
             }
         });
 
-
         // Ctrl/Cmd + Click to add/remove from selection
         playground.addEventListener('click', (e) => {
-            // If this click immediately follows a drag, ignore it once and reset the flag
-            if (state.wasDragging) {
-                state.wasDragging = false; // <-- critical so future clicks work
-                return;
-            }
-        
+           // If this click immediately follows a drag, ignore it UNLESS it's a Ctrl/Shift click
+           if (state.wasDragging && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+               state.wasDragging = false; // <-- critical so future clicks work
+               return;
+           }
+           // Always reset the flag
+           state.wasDragging = false;       
             const tileEl = e.target.closest('.letter-tile');
         
-            // Background click: clear selection (keep this if you want A-behavior)
+            // Background click: clear selection UNLESS Ctrl/Shift held (for box selection)
             if (!tileEl) {
-                state.selectedTiles.forEach(t => t.element.classList.remove('selected'));
-                state.selectedTiles.clear();
+                if (!e.ctrlKey && !e.metaKey && !e.shiftKey) {
+                    state.selectedTiles.forEach(t => t.element.classList.remove('selected'));
+                    state.selectedTiles.clear();
+                }
                 return;
-            }
-        
+            }       
             const tileData = state.tiles.find(t => t.element === tileEl);
             if (!tileData) return;
         
@@ -1647,14 +1840,33 @@
                     state.selectedTiles.add(tileData);
                     tileEl.classList.add('selected');
                 }
+                state.lastClickedTile = tileData;
                 return;
             }
-        
+            
+            // Shift + Click => range selection
+            if (e.shiftKey && state.lastClickedTile) {
+                const lastIndex = state.tiles.indexOf(state.lastClickedTile);
+                const currentIndex = state.tiles.indexOf(tileData);
+                
+                if (lastIndex !== -1 && currentIndex !== -1) {
+                    const start = Math.min(lastIndex, currentIndex);
+                    const end = Math.max(lastIndex, currentIndex);
+                    
+                    for (let i = start; i <= end; i++) {
+                        state.selectedTiles.add(state.tiles[i]);
+                        state.tiles[i].element.classList.add('selected');
+                    }
+                }
+                return;
+            }
+            
             // Plain click => select only this tile
             state.selectedTiles.forEach(t => t.element.classList.remove('selected'));
             state.selectedTiles.clear();
             state.selectedTiles.add(tileData);
             tileEl.classList.add('selected');
+            state.lastClickedTile = tileData;
         });
 
         // Modal controls
@@ -1709,6 +1921,8 @@
         fontFamily.addEventListener('change', (e) => {
             const selectedFont = e.target.value;
             
+            // Show/hide custom font upload group
+            customFontUploadGroup.style.display = selectedFont === 'customFont' ? 'block' : 'none';
             if (selectedFont) {
                 state.currentFont = selectedFont;
                 letterInput.style.fontFamily = selectedFont;
@@ -1823,6 +2037,9 @@
 
         // Font color
         fontColor.addEventListener('change', (e) => {
+            // Show/hide custom font color group
+            customFontColorGroup.style.display = e.target.value === 'custom' ? 'flex' : 'none';
+            
             if (e.target.value === 'custom') {
                 const hexValue = customFontColorHex.value;
                 if (hexValue && /^#[0-9A-F]{6}$/i.test(hexValue)) {
@@ -1859,6 +2076,9 @@
 
         // Tile color
         tileColor.addEventListener('change', (e) => {
+            // Show/hide custom tile color group
+            customTileColorGroup.style.display = e.target.value === 'custom' ? 'flex' : 'none';
+           
             let newColor;
             if (e.target.value === 'custom') {
                 const hexValue = customTileColorHex.value;
@@ -1918,24 +2138,308 @@
         });
 
         // Tile style (3D vs Flat)
-        document.querySelectorAll('input[name="tileStyle"]').forEach(radio => {
-          radio.addEventListener('change', (e) => {
+        tileStyleSelect.addEventListener('change', (e) => {
             state.tileStyle = e.target.value;
             const tileImg = e.target.value === '3d' ? state.tileImage3D : state.tileImageFlat;
         
             state.tiles.forEach(tile => {
-              const bg = tile.element.querySelector('.tile-bg');
-              bg.src = tileImg;
-              bg.style.filter = state.tileStyle === '3d'
-                ? 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
-                : 'none';
-
-              const letterSpan = tile.element.querySelector('.tile-letter');
-              applyLetterPosition(letterSpan);
+                const bg = tile.element.querySelector('.tile-bg');
+                bg.src = tileImg;
+                bg.style.filter = state.tileStyle === '3d'
+                    ? 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
+                    : 'none';
+        
+                const letterSpan = tile.element.querySelector('.tile-letter');
+                applyLetterPosition(letterSpan);
             });
         
             updatePreviewTile();
-          });
+        });
+
+        // Background preset selector
+        bgPreset.addEventListener('change', (e) => {
+            state.bgPreset = e.target.value;
+            
+            // Show/hide custom groups
+            if (e.target.value === 'customColor') {
+                customBgColorGroup.style.display = 'flex';
+                customBgImageGroup.style.display = 'none';
+            } else if (e.target.value === 'customImage') {
+                customBgColorGroup.style.display = 'none';
+                customBgImageGroup.style.display = 'block';
+            } else {
+                customBgColorGroup.style.display = 'none';
+                customBgImageGroup.style.display = 'none';
+            }
+            
+            updateBackground(playground);
+            updatePreviewTile();
+        });
+
+        // Custom background color
+        customBgColorHex.addEventListener('input', (e) => {
+            const hexValue = e.target.value;
+            if (/^#[0-9A-F]{6}$/i.test(hexValue)) {
+                bgPreset.value = 'customColor';
+                state.bgPreset = 'customColor';
+                state.bgCustomColor = hexValue;
+                customBgColorGroup.style.display = 'flex';
+                customBgImageGroup.style.display = 'none';
+                
+                updateBackground(playground);
+                updatePreviewTile();
+            }
+        });
+
+        // Custom background image upload
+        bgImageUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    state.bgCustomImage = event.target.result;
+                    state.bgPreset = 'customImage';
+                    bgPreset.value = 'customImage';
+                    bgImageName.textContent = file.name;
+                    customBgImageGroup.style.display = 'block';
+                    customBgColorGroup.style.display = 'none';
+                    
+                    updateBackground(playground);
+                    updatePreviewTile();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Reset Style button
+        resetStyleBtn.addEventListener('click', () => {
+            // Reset to defaults
+            state.currentFont = null;
+            state.fontSize = 32;
+            state.tileSize = 80;
+            state.fontColor = '#1a1a2e';
+            state.bgPreset = 'default';
+            state.bgCustomColor = null;
+            state.bgCustomImage = null;
+            
+            const defaultTileColor = '#e8dcc4';
+            const colors = calculateTileColors(defaultTileColor);
+            state.tileColor = colors.base;
+            state.tileColorLight = colors.light;
+            state.tileColorDark = colors.dark;
+            state.tileColorBorder = colors.border;
+            state.tileStyle = '3d';
+            
+            // Regenerate tile images
+            state.tileImage3D = generateTileImage(true);
+            state.tileImageFlat = generateTileImage(false);
+            
+            // Update UI controls
+            fontSize.value = 32;
+            fontSizeValue.textContent = '32';
+            tileSize.value = 80;
+            tileSizeValue.textContent = '80';
+            fontFamily.value = '';
+            fontColor.value = '#1a1a2e';
+            tileColor.value = '#e8dcc4';
+            bgPreset.value = 'default';
+            customFontColorHex.value = '';
+            customTileColorHex.value = '';
+            customBgColorHex.value = '';
+            letterInput.style.fontFamily = '';
+            letterInput.style.fontSize = '';
+            fontName.textContent = 'No custom font loaded';
+            fontUpload.value = '';
+            bgImageUpload.value = '';
+            bgImageName.textContent = 'No image loaded';
+            customBgColorGroup.style.display = 'none';
+            customBgImageGroup.style.display = 'none';
+            
+            tileStyleSelect.value = '3d';
+            
+            // Update all tiles
+            const tileImg = state.tileImage3D;
+            state.tiles.forEach(tile => {
+                tile.element.style.width = state.tileSize + 'px';
+                tile.element.style.height = state.tileSize + 'px';
+                
+                const bg = tile.element.querySelector('.tile-bg');
+                bg.src = tileImg;
+                bg.style.filter = 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))';
+                
+                const letterSpan = tile.element.querySelector('.tile-letter');
+                letterSpan.style.fontSize = state.fontSize + 'px';
+                letterSpan.style.color = state.fontColor;
+                letterSpan.style.fontFamily = '';
+                applyLetterPosition(letterSpan);
+            });
+            
+            updateBackground(playground);
+            updatePreviewTile();
+        });
+
+        // Copy Tile Text button
+        copyTextBtn.addEventListener('click', () => {
+            copyVisualOrderToClipboard();
+        });
+
+        // Download as PNG button
+        downloadPngBtn.addEventListener('click', async () => {
+          try {
+            const rect = playground.getBoundingClientRect();
+            const canvas = document.createElement('canvas');
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            const ctx = canvas.getContext('2d');
+        
+       
+// STEP 1: Draw the background FIRST (with proper sizing)
+const bgPreset = state.bgPreset;
+
+if (bgPreset === 'default') {
+  // Dark blue default background (solid now)
+  ctx.fillStyle = '#16213E';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+} else if (bgPreset === 'white') {
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+} else if (bgPreset === 'black') {
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+} else if (bgPreset === 'green') {
+  // ? solid forest green to match UI
+  ctx.fillStyle = '#228B22';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+} else if (bgPreset === 'slate') {
+  // ? solid slate
+  ctx.fillStyle = '#2F3E46';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+} else if (bgPreset === 'parchment') {
+  // ? solid parchment
+  ctx.fillStyle = '#F5E6CA';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+} else if (bgPreset === 'teal') {
+  // ? solid teal
+  ctx.fillStyle = '#008080';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+} else if (bgPreset === 'bubbles' && state.bgBubblesPattern) {
+  // Draw bubbles pattern WITHOUT squashing
+  const img = new Image();
+  img.src = state.bgBubblesPattern;
+  await new Promise(resolve => img.onload = resolve);
+
+  const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+  const scaledWidth = img.width * scale;
+  const scaledHeight = img.height * scale;
+  const offsetX = (canvas.width - scaledWidth) / 2;
+  const offsetY = (canvas.height - scaledHeight) / 2;
+
+  ctx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight);
+
+} else if (bgPreset === 'waves' && state.bgWavesPattern) {
+  const img = new Image();
+  img.src = state.bgWavesPattern;
+  await new Promise(resolve => img.onload = resolve);
+
+  const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+  const scaledWidth = img.width * scale;
+  const scaledHeight = img.height * scale;
+  const offsetX = (canvas.width - scaledWidth) / 2;
+  const offsetY = (canvas.height - scaledHeight) / 2;
+
+  ctx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight);
+
+} else if (bgPreset === 'customColor' && state.bgCustomColor) {
+  ctx.fillStyle = state.bgCustomColor;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+} else if (bgPreset === 'customImage' && state.bgCustomImage) {
+  const img = new Image();
+  img.src = state.bgCustomImage;
+  await new Promise(resolve => img.onload = resolve);
+
+  const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+  const scaledWidth = img.width * scale;
+  const scaledHeight = img.height * scale;
+  const offsetX = (canvas.width - scaledWidth) / 2;
+  const offsetY = (canvas.height - scaledHeight) / 2;
+
+  ctx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight);
+
+} else {
+  // ultimate fallback
+  ctx.fillStyle = '#16213E';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+        
+            // STEP 2: Draw each tile on top of the background
+            for (const tileData of state.tiles) {
+              const { x, y } = tileData;
+            
+              // Draw tile background image (the tile itself)
+              const bgImgEl = tileData.element.querySelector('.tile-bg');
+              if (bgImgEl && bgImgEl.src) {
+                const tileImg = new Image();
+                tileImg.src = bgImgEl.src;
+                await new Promise(resolve => {
+                  tileImg.onload = resolve;
+                  tileImg.onerror = resolve; // Continue even if image fails
+                });
+                
+                // Add shadow effect for 3D tiles
+                if (state.tileStyle === '3d') {
+                  ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+                  ctx.shadowBlur = 8;
+                  ctx.shadowOffsetX = 0;
+                  ctx.shadowOffsetY = 4;
+                }
+                
+                // Draw tile at exact size
+                ctx.drawImage(tileImg, x, y, state.tileSize, state.tileSize);
+                
+                // Reset shadow so it doesn't affect letters
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+              }
+            
+              // Draw the letter on the tile
+              const letterSpan = tileData.element.querySelector('.tile-letter');
+              if (letterSpan) {
+                ctx.font = `bold ${state.fontSize}px ${state.currentFont || 'Arial'}`;
+                ctx.fillStyle = state.fontColor || '#1a1a2e';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                const centerX = x + state.tileSize / 2;
+                const centerY = state.tileStyle === '3d'
+                  ? y + state.tileSize * 0.425
+                  : y + state.tileSize * 0.5;
+                ctx.fillText(letterSpan.textContent, centerX, centerY);
+              }
+            }
+        
+            // STEP 3: Download the image
+            canvas.toBlob((blob) => {
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = 'carbbels-tiles.png';
+              a.click();
+              URL.revokeObjectURL(url);
+            });
+        
+          } catch (error) {
+            console.error('Failed to generate PNG:', error);
+            alert('Failed to generate PNG. Please try again.');
+          }
         });
 
         // Clear playground
@@ -1991,7 +2495,7 @@
             fontName.textContent = 'No custom font loaded';
             fontUpload.value = '';
         
-            document.querySelector('input[name="tileStyle"][value="3d"]').checked = true;
+            tileStyleSelect.value = '3d';
         
             updatePreviewTile();
         });
@@ -2065,6 +2569,8 @@
         // Initialize
         letterInput.dataset.previousValue = '';
         updatePreviewTile();
+        updateBackground(playground);
+
     </script>
 </body>
 </html>
