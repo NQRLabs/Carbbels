@@ -1,9 +1,8 @@
-![Sandbox screenshot](./assets/images/screenshot.png)
+<img alt="Carbbels-logo" src="./assets/images/logo.png" style="margin-left:auto; margin-right:auto; display:block; width:500px;"/>
+
 # Carbbels
 
-Carbbels is a manual anagram sandbox designed for puzzle-solving and exploratory wordplay. It is intentionally not a game. Instead, it is a flexible workspace where letters can be typed, dragged, grouped, visually reordered, copied into different sequences, and used for puzzle deduction. Originally built to support an Alternate Reality Game (ARG).
-
----
+Carbbels is a manual anagram sandbox designed for puzzle-solving and exploratory wordplay. It is intentionally not a game. Instead, it is a flexible workspace where letters can be typed, dragged, grouped, visually reordered, copied into different sequences, and used for puzzle deduction. 
 
 ## Features
 
@@ -33,8 +32,6 @@ Carbbels is a manual anagram sandbox designed for puzzle-solving and exploratory
 - **Ctrl + Z**: Undo last action
 - **Ctrl + Y**: Redo undone action
 
----
-
 ## Why Carbbels Exists
 
 Carbbels was created for situations where:
@@ -45,8 +42,6 @@ Carbbels was created for situations where:
 Tiles remain movable objects rather than fixed positions.
 
 > Some puzzles reveal their answers only when you move the letters around.
-
----
 
 ## Keyboard and Mouse Reference
 
@@ -67,8 +62,6 @@ Tiles remain movable objects rather than fixed positions.
 | Evenly distribute horizontally | H |
 | Evenly distribute vertically | V |
 
----
-
 ## Tech Overview
 
 - HTML / CSS interface
@@ -77,27 +70,10 @@ Tiles remain movable objects rather than fixed positions.
 - Local-only (no server required)
 - Easy to embed in ARGs, puzzle hunts, and escape-room-style web pages
 
----
-
-## Future Ideas
-
-- Save / load tile layouts
-- Export sequences for puzzle design
-- Enhanced mobile touch support
-- Tile rotation for more complex puzzles
-- Optional grid snapping
-
----
-
 ## License
 
-MIT License — free for modification and use.  
-Attribution appreciated if used publicly.
-
----
+MIT License - free for modification and use. Attribution appreciated if used publicly.
 
 ## Credit
 
-Created for puzzle solvers, game designers, and curious thinkers interested in the deeper meaning that emerges when letters can move.
-
-If you use Carbbels in a puzzle or ARG, I’d love to hear about it.
+Created by **NQR** for puzzle solvers, game designers, and curious thinkers. If you use Carbbels in a puzzle or ARG, I'd love to hear about it.
