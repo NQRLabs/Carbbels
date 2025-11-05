@@ -4,6 +4,8 @@
 
 Carbbels is a manual anagram sandbox designed for puzzle-solving and exploratory wordplay. It is intentionally not a game. Instead, it is a flexible workspace where letters can be typed, dragged, grouped, visually reordered, copied into different sequences, and used for puzzle deduction. 
 
+[**View Live Demo**](nqrlabs.com/Carbbels/)
+
 ## Features
 
 ### Text and Tile Sync
