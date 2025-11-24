@@ -51,11 +51,13 @@
     <link rel="icon" type="image/png" sizes="192x192" href="./assets/images/android-chrome-192x192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="./assets/images/android-chrome-512x512.png">
     <style>
-    :root {
+        :root {
             --bg: #0c1020;
             --card: #151c3b;
             --ink: #eef1ff;
             --dim: #b9c6ef;
+            --sub: #a0a0a0;
+            --button: #4ecdc4;
             --border: #2b3868;
             --accent: #1fc9aa;
             --accent-hover: #18b79a;
@@ -102,7 +104,7 @@
 
         .subtitle {
             font-size: 0.9em;
-            color: #a0a0a0;
+            color: var(--sub);
             letter-spacing: 1px;
             font-style: italic;
         }
@@ -127,7 +129,7 @@
         label {
             display: block;
             margin-bottom: 8px;
-            color: #4ecdc4;
+            color: var(--button);
             font-size: 0.9em;
             font-weight: 500;
             letter-spacing: 0.5px;
@@ -146,7 +148,7 @@
 
         input[type="text"]:focus {
             outline: none;
-            border-color: #4ecdc4;
+            border-color: var(--button);
             box-shadow: 0 0 10px rgba(78, 205, 196, 0.3);
         }
 
@@ -175,8 +177,8 @@
 
         .btn-style {
             background: rgba(78, 205, 196, 0.2);
-            border: 1px solid #4ecdc4;
-            color: #4ecdc4;
+            border: 1px solid var(--button);
+            color: var(--button);
         }
 
         .btn-style:hover {
@@ -214,7 +216,7 @@
         }
 
         .letter-tile.selected {
-            outline: 3px solid #4ecdc4;
+            outline: 3px solid var(--button);
             outline-offset: 2px;
         }
 
@@ -279,7 +281,7 @@
 
         .modal-title {
             font-size: 1.5em;
-            color: #4ecdc4;
+            color: var(--button);
             font-weight: 300;
             letter-spacing: 1px;
         }
@@ -287,7 +289,7 @@
         .close-btn {
             background: none;
             border: none;
-            color: #a0a0a0;
+            color: var(--sub);
             font-size: 1.5em;
             cursor: pointer;
             padding: 0;
@@ -333,7 +335,7 @@
 
         select:focus {
             outline: none;
-            border-color: #4ecdc4;
+            border-color: var(--button);
             box-shadow: 0 0 10px rgba(78, 205, 196, 0.3);
         }
 
@@ -360,7 +362,7 @@
             appearance: none;
             width: 18px;
             height: 18px;
-            background: #4ecdc4;
+            background: var(--button);
             border-radius: 50%;
             cursor: pointer;
             box-shadow: 0 0 8px rgba(78, 205, 196, 0.5);
@@ -369,7 +371,7 @@
         input[type="range"]::-moz-range-thumb {
             width: 18px;
             height: 18px;
-            background: #4ecdc4;
+            background: var(--button);
             border-radius: 50%;
             cursor: pointer;
             box-shadow: 0 0 8px rgba(78, 205, 196, 0.5);
@@ -384,9 +386,9 @@
             display: inline-block;
             padding: 10px 20px;
             background: rgba(78, 205, 196, 0.2);
-            border: 1px solid #4ecdc4;
+            border: 1px solid var(--button);
             border-radius: 4px;
-            color: #4ecdc4;
+            color: var(--button);
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 0.9em;
@@ -401,13 +403,13 @@
         .range-value {
             display: inline-block;
             margin-left: 10px;
-            color: #4ecdc4;
+            color: var(--button);
             font-weight: 500;
             min-width: 50px;
         }
 
         .info-text {
-            color: #a0a0a0;
+            color: var(--sub);
             font-size: 0.85em;
             margin-top: 5px;
             font-style: italic;
@@ -475,7 +477,7 @@
 
         .style-option:hover {
             background: rgba(22, 33, 62, 0.8);
-            border-color: #4ecdc4;
+            border-color: var(--button);
         }
 
         .style-option input[type="radio"] {
@@ -485,7 +487,7 @@
         /* Selection rectangle */
         #selectionRect {
             position: absolute;
-            border: 2px dashed #4ecdc4;
+            border: 2px dashed var(--button);
             background: rgba(78, 205, 196, 0.1);
             pointer-events: none;
             display: none;
@@ -508,6 +510,26 @@
                 padding: 20px;
             }
         }
+
+        footer {
+            margin-top: auto;
+            margin-bottom: 0;
+            width: 100%;
+            max-width: 600px; /* match .container max-width */
+            padding-top: 20px;
+            padding-bottom: 0;
+            color: var(--sub); 
+        }
+        footer a {
+            color: var(--sub); 
+            cursor: pointer;
+            text-decoration: none; 
+            transition: color 0.3s ease;
+        }
+        footer a:hover {
+            text-decoration: underline; 
+            color: var(--button); 
+        }
     </style>
 </head>
 <body>
@@ -522,7 +544,7 @@
                 <label for="letterInput">Enter Letters</label>
                 <input type="text" id="letterInput" placeholder="Type letters to create tiles..." autocomplete="off">
 
-                <a href="#" id="keyboardShortcutLink" class="info-text" style="color: #a0a0a0; text-decoration: none; transition: color 0.3s ease;" onmouseover="this.style.color='#4ecdc4'" onmouseout="this.style.color='#a0a0a0'">Controls & Shortcuts</a>
+                <a href="#" id="keyboardShortcutLink" class="info-text" style="color: var(--sub); text-decoration: none; transition: color 0.3s ease;" onmouseover="this.style.color='var(--button)'" onmouseout="this.style.color='var(--sub)">Controls & Shortcuts</a>
             </div>
 
             <div class="button-group">
@@ -535,13 +557,17 @@
         </div>
     </div>
 
-        <div id="playground">
-            <div id="selectionRect"></div>
-        </div>
-
-        <footer style="text-align: center; margin-top: 20px; padding: 20px; color: var(--dim); font-size: 0.75em; border-top: 1px solid rgba(43, 56, 104, 0.3);">
-            <a href="#" id="licenseLink" style="color: #a0a0a0; text-decoration: none; transition: color 0.3s ease;" onmouseover="this.style.color='#4ecdc4'" onmouseout="this.style.color='#a0a0a0'">© 2025 NQR • Licensed under MIT • Click for details</a>
-        </footer>
+    <div id="playground" style="margin-bottom: 20px;">
+        <div id="selectionRect"></div>
+    </div>
+    <footer style="line-height: 1.75; text-align: center; font-size: 0.75em; border-top: 2px solid #2b386866;">
+        <a href="https://youtube.com/@CLU-NQR" target="_blank">YouTube</a> &middot;
+        <a href="https://discord.gg/HT9YE8rvuN" target="_blank">Discord</a> &middot;
+        <a href="https://nqrlabs.com" target="_blank">NQR Labs</a> &middot;
+        <a href="https://github.com/NQRLabs" target="_blank">GitHub</a>
+        <br>
+        &copy; 2025 NQR &middot; <a id="licenseLink">License</a>
+    </footer>
 
     <!-- Style Modal -->
     <div id="styleModal" class="modal">
@@ -723,11 +749,12 @@
     <div id="licenseModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">MIT License</h2>
+                <h2 class="modal-title">Carbbels License</h2>
                 <button class="close-btn" id="closeLicenseModal">&times;</button>
             </div>
             <div style="line-height: 1.6; color: #e0e0e0;">
-                <p style="margin-bottom: 15px;">Copyright (c) 2025 NQR</p>
+                <p style="margin-bottom: 15px;">Carbbels - MIT License</p>
+                <p style="margin-bottom: 15px;">Copyright &copy; 2025 NQR</p>
                 <p style="margin-bottom: 15px;">Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
                 <p style="margin-bottom: 15px;">The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
                 <p style="margin-bottom: 0;">THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
